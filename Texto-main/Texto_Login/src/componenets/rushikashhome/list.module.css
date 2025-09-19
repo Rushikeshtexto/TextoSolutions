@@ -1,0 +1,172 @@
+
+
+/* ===== Global Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Container for the segments section */
+
+
+.segments_section {
+    padding: 20px;
+  background-color:white; /* light gray background */
+ 
+  margin: 0;               /* remove top margin */
+  margin-top: 0;           /* explicitly remove space from top */
+  font-family: Arial, sans-serif;
+
+  /* Optional: ensure it doesn't overlap fixed header */
+  padding-top: 15px; 
+}
+
+/* Section heading */
+.segments_section h2 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 24px;
+}
+
+.app_layout {
+  display: flex;
+  flex-direction: row;
+
+  /* ⬇️ This makes sidebar + content start after header */
+  margin-top: 60px;   /* same as header height */
+}
+.sidebar {
+  position: fixed;
+  top: 60px;                 /* sits just below header */
+  left: 0;
+  height: calc(100vh - 60px); /* full height minus header */
+  width: 220px;
+  background: #f4f4f4;
+  padding: 15px;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;          /* scroll if sidebar items overflow */
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  margin-left: 220px;  /* push right so it doesn’t overlap sidebar */
+  padding: 20px;
+  overflow-y: auto;
+  min-height: calc(100vh - 60px - 50px); /* full height minus header & footer */
+}
+
+/* New flex container for search + buttons */
+.segments_header {
+  display: flex;
+  justify-content: space-between; /* space between search and buttons */
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap; /* ✅ so it stacks on smaller screens */
+}
+
+.segments_search {
+  flex: 1;              /* search box takes available space */
+  max-width: 400px;     /* but doesn’t grow beyond */
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-right: 10px;   /* gap before buttons */
+}
+
+.segments_buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap; /* ✅ buttons wrap on smaller screens */
+}
+
+
+/* Buttons */
+.segments_buttons .btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff; /* blue button */
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.segments_buttons .btn:hover {
+  background-color: #0056b3; /* darker blue on hover */
+}
+
+/* Specific button variations */
+.segments_buttons .add-segment {
+  background-color: #28a745; /* green button */
+}
+
+.segments_buttons .add-segment:hover {
+  background-color: #1e7e34;
+}
+
+
+
+.table_container {
+  flex: 1 1 auto;
+  overflow-y: auto;         /* ✅ vertical scroll when rows exceed height */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  height: 500px;            /* ✅ fixed height for all tables */
+  background: white;
+  display: block;           /* ✅ required for scroll */
+}
+
+.custom_table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  height: 100%;             /* ✅ table fills the container height */
+}
+
+.custom_table th,
+.custom_table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  word-break: break-word;   /* ✅ break long words */
+  white-space: normal;      /* ✅ allow wrapping */
+  max-width: 200px;         /* ✅ control width */
+}
+
+.custom_table th {
+  position: sticky;
+  top: 0;
+  background-color: #4caf50; /* ✅ solid background */
+  color: white;
+  z-index: 20;               /* ✅ above content */
+  white-space: nowrap;
+}
+
+
+
+
+.custom_table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.custom_table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.td_left {
+  text-align: left !important;
+}
+
+.paginationcontainer {
+  display: flex;
+  justify-content: space-between; /* align items from left */
+  align-items: center;
+ margin-bottom: 100px;
+  gap: 20px;        /* space between left & right sections */
+  padding-left: 20px; /* ✅ small indent from left */
+  padding-right: 20px; /* ✅ breathing room on right */
+  height:40px;
+}

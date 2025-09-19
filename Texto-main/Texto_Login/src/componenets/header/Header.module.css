@@ -1,0 +1,122 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body wrapper */
+body, .app {
+  font-family: Arial, sans-serif;
+  color: #333;
+  background: #fff;
+  
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;                 /* fixed height */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1000;                /* stay above content */
+}
+
+
+
+.logo_img {
+  max-width: 50px;
+  max-height: 50px;
+  border-radius: 10px;
+}
+
+/* Logo text */
+.navbar .logo {
+  font-weight: bold;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Navigation */
+.navbar nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar nav a {
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+}
+
+.profileWrapper {
+  position: relative;
+}
+
+.profileCircle {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #c27edf;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Dropdown */
+.dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.dropdown button {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.dropdown button:hover {
+  background: #f0f0f0;
+}
+
+/* ✅ Add content spacing so header doesn't overlap */
+.content {
+  flex: 1;
+  margin-top: 60px;  /* equal to navbar height */
+  padding: 20px;
+}
+
+/* Footer (if you add one later) */
+.footer {
+  height: 50px;
+  background: #004080;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

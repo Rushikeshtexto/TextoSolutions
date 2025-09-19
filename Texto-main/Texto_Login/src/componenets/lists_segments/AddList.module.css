@@ -1,0 +1,75 @@
+.download{
+    position: relative;
+    left:auto;
+    top:auto;
+    margin-left: 0px;
+    margin-right: 0px;
+    display: flex;
+    gap: 10px; /* space between buttons */
+    flex-wrap: wrap; /* wrap buttons on smaller screens */
+   
+    justify-content: flex-end;
+    width: auto;         /* 👈 container only wraps content */
+  pointer-events: none;
+  padding: 0 20px;
+
+}
+
+.uploadBox{
+  width: 80vw;     /* 90% of viewport width */
+  height: 70vh;    /* 70% of viewport height */
+  border: 2px solid black;
+  position: relative;
+  margin-left: 10px;
+}
+.custom_heading {
+  font-size: 1.125rem;   /* Tailwind text-lg */
+  line-height: 1.75rem;  /* Tailwind sets this with text-lg */
+  font-weight: 600;      /* font-semibold */
+  margin-bottom: 1rem;   /* mb-4 */
+  margin-top: 0.25rem;   /* mt-1 */
+  margin-left: 2vw;
+}
+.app_layout {
+  display: flex; /* sidebar + content side by side */
+  height: 100vh;
+  width:100%;
+}
+
+.sidebar {
+  width: 220px;       /* or whatever width you want */
+  background: #f4f4f4; /* just for visibility */
+  flex-shrink: 0; 
+  position: fixed;
+  left:0px; 
+  top:74px; /* prevent shrinking */
+  height: auto;
+}
+
+
+
+.content {
+
+  flex: 1;             /* take remaining space */
+  padding: 20px;
+  margin-top: 20px;
+  overflow-y: auto;
+overflow-x: auto;
+margin-left: 180px;
+
+min-height: 100vh;
+  
+}
+
+.content h2{padding-left: 15px;}
+
+  .selectbtn{
+    margin: 0px;
+
+  }
+  .my_text {
+    margin-top: 12px;      /* mt-3 */
+    font-size: 18px;       /* text-sm */
+    color: #4B5563;        /* text-gray-600 */
+    margin-left: 10px;
+  }

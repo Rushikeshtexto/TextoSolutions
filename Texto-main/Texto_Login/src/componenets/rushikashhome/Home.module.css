@@ -1,0 +1,65 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Page Layout */
+.app_layout {
+  display: flex;
+  flex-direction: row;
+
+  /* ⬇️ This makes sidebar + content start after header */
+  margin-top: 60px;   /* same as header height */
+}
+.sidebar {
+  position: fixed;
+  top: 60px;                 /* sits just below header */
+  left: 0;
+  height: calc(100vh - 60px); /* full height minus header */
+  width: 220px;
+  background: #f4f4f4;
+  padding: 15px;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;          /* scroll if sidebar items overflow */
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  margin-left: 220px;  /* push right so it doesn’t overlap sidebar */
+  padding: 20px;
+  overflow-y: auto;
+  min-height: calc(100vh - 60px - 50px); /* full height minus header & footer */
+}
+
+
+/* Homepage section */
+.Homepage h1 {
+  font-size: 35px;
+  color: aquamarine;
+  margin-bottom: 10px;
+}
+
+/* Footer (optional if you didn’t style earlier) */
+.footer {
+  height: 50px;
+  background: #004080;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ Responsive: Sidebar collapses on small screens */
+@media (max-width: 768px) {
+  .app_layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+}

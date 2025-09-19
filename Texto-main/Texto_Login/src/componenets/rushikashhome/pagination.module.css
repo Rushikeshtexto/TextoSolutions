@@ -1,0 +1,48 @@
+.pagination {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 0;
+  margin-bottom: 5px;
+  background: #fff;
+}
+
+.pagination button {
+  padding: 0px 5px;
+  border: none;
+  background: #c27edf;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ✅ When disabled attribute is true */
+.pagination button:disabled,
+.pageBtn.disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed;
+  border: 1px solid #aaa;
+}
+
+.pagination .searchpagination {
+  width: 30px;
+  margin: 0 1px;
+}
+
+.pageBtn {
+  padding: 6px 12px;
+
+  background-color: white;
+  
+  cursor: pointer;
+ 
+  transition: 0.2s;
+}
+
+.pageBtn:hover:not(:disabled):not(.disabled) {
+ 
+  color: white;
+}

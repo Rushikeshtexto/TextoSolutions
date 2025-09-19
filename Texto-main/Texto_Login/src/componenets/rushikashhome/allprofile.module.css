@@ -1,0 +1,188 @@
+/* ===== Global Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===== Layout ===== */
+.app_layout {
+  display: flex;
+  flex-direction: row;
+  margin-top: 60px; /* header height */
+  min-height: calc(100vh - 50px); /* minus footer height */
+}
+
+/* Sidebar fixed */
+.sidebar {
+  width: 220px;
+  background: #f4f4f4;
+  padding: 15px;
+  border-right: 1px solid #ddd;
+  position: fixed;  /* keep sidebar fixed */
+  top: 60px;        /* below header */
+  bottom: 50px;     /* above footer */
+  left: 0;
+  overflow-y: auto; /* scroll if content tall */
+}
+
+/* Content area */
+.content {
+  flex: 1;
+  margin-left: 220px;  /* avoid overlapping sidebar */
+  padding: 20px;
+  overflow-y: auto;    /* scroll if content tall */
+  min-height: calc(100vh - 60px - 50px);
+}
+
+/* ===== Profiles Section ===== */
+.profiles_section {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px - 50px); /* full viewport minus header & footer */
+  padding: 15px;
+  background: #fff;
+}
+/* Section title */
+.profiles_section h2 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Search Box */
+.search_box {
+  margin-bottom: 20px;
+  margin-left: auto; /* align right */
+  padding: 10px 14px;
+  width: 280px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+}
+
+.search_box:focus {
+  border-color: #4caf50;
+  box-shadow: 0px 0px 4px rgba(76, 175, 80, 0.4);
+}
+
+/* Table Container with vertical scroll */
+
+.table_container {
+  flex: 1 1 auto;       /* fill remaining vertical space */
+  overflow-y: auto;     /* scroll only if content exceeds container */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  min-height: 0;        /* ⚡ important for flex scroll to work properly */
+}
+
+/* Table Styling */
+.profiles_table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;      /* sticky headers work */
+}
+
+.profiles_table th,
+.profiles_table td {
+  padding: 12px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  text-align: left;
+   word-wrap: break-word;  /* older support */
+  word-break: break-word;
+}
+
+.profiles_table th {
+  position: sticky;
+  top: 0;
+  background-color: #4caf50;
+  color: white;
+  z-index: 10;
+  text-transform: uppercase;
+}
+
+/* Zebra Rows */
+.even_row {
+  background-color: #f9f9f9;
+}
+
+.odd_row {
+  background-color: #fff;
+}
+
+/* Hover effect */
+.profiles_table tr:hover {
+  background-color: #e6f7ff;
+  transition: 0.3s;
+}
+
+/* No entries message */
+.no_entries {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* Pagination */
+.paginationcontainer {
+  display: flex;
+  justify-content: space-between; /* left & right items */
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: none;
+  background: #c27edf;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ===== Header & Footer ===== */
+.app_container > header,
+.app_container > footer {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .app_layout {
+    flex-direction: column;
+    margin-top: 0;
+  }
+
+  .sidebar {
+    position: relative;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .content {
+    margin-left: 0;
+    padding: 15px;
+    min-height: auto;
+  }
+
+  .search_box {
+    width: 100%;
+    margin-left: 0;
+    margin-bottom: 15px;
+  }
+
+  .table_container {
+    max-height: 400px; /* adjust for smaller screens */
+  }
+}

@@ -1,0 +1,188 @@
+/* ===== Global Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, .app {
+  font-family: Arial, sans-serif;
+  color: #333;
+  background: #fff;
+  flex: 1;
+  margin-top: 20px;   /* equal to header height */
+  margin-bottom: 60px; /* equal to footer height */
+  overflow-y: auto;   /* only middle scrolls */
+  padding: 20px;
+}
+.tab_link.active{
+  background: #1e7e34;
+  color: white;
+
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  margin-bottom: 50px;
+}
+
+.navbar .logo {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* ===== Signup Container ===== */
+.sidebar_container {
+  /* height:600px; */
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  background: #dfcbcb;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Tab Buttons ===== */
+.tab_buttons {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: #f4f4f4;
+  border-radius: 8px;
+  height: 700px;
+  width: 180px;
+}
+
+.tab_link {
+  margin-bottom: 15px;
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.3s, color 0.3s;
+  cursor: pointer;
+}
+
+.tab_link:hover {
+  background: #c27edf;
+  color: white;
+}
+
+/* ===== Tab Content ===== */
+.tab_content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+
+/* ===== Footer ===== */
+.footer {
+  background: #f0f2f5;
+  padding: 30px 50px;
+  margin-top: 0px;
+}
+
+.footer_logo {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.footer_grid {
+  display: flex;
+  gap: 50px;
+  flex-wrap: wrap;
+}
+
+.footer_grid h4 {
+  margin-bottom: 10px;
+}
+
+.footer_grid a {
+  display: block;
+  margin-bottom: 6px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+}
+
+.footer_bottom {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+.error_message {
+  color: red;
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+
+
+.footer {
+  position: fixed;       /* make it stick */
+  bottom: 0;             /* stick to bottom */
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #f0f2f5;
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  text-align: center;
+  z-index: 1000;
+}
+
+.footer_logo {
+  font-weight: bold;
+   margin-right: 50px;
+   margin-top: 20px;
+}
+
+.footer_grid {
+  display: flex;
+  gap: 100px;
+}
+
+.footer_grid h4 {
+  margin-right: 10px;
+}
+
+.footer_grid a {
+  display: block;
+  margin-right: 6px;
+  margin-left: 6px;
+  text-decoration: none;
+  color: #333;
+  font-size: 10px;
+}
+
+.footer_bottom {
+  margin-top: 10px;
+  font-size: 6px;
+  color: #666;
+  text-align: center;
+}
+
+.logo{
+  max-width: 50px;
+  max-height: 50px;
+  border-radius: 20px;
+}
+
+.social{
+  max-width: 30px;
+  max-height: 30px;
+  border-radius: 10px;
+}
