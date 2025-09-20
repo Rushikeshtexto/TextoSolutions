@@ -9,7 +9,7 @@ import { FaList } from "react-icons/fa";
 const SideBar = ({ setLoading }) => {
   const [activeTab, setActiveTab] = useState();
     return (
-      <div className={styles.tab_buttons}>
+      <div className={styles.sidebar}>
         <a
           href="/home"
           className={`${styles.tab_link} ${activeTab === "home" ? styles.active : ""}`}

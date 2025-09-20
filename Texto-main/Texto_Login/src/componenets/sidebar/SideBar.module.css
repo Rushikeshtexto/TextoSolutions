@@ -1,31 +1,42 @@
 
 
-/* Sidebar links */
-.tab_buttons {
+
+.sidebar {
   display: flex;
   flex-direction: column;
-  background:#d4cece;
-  position: fixed;        /* Fixes sidebar in one place */
-  top: 60px;              /* adjust this to match your header height */
+  background: #d4cece;
+  position: fixed;              /* Sidebar stays fixed */
+  top: 60px;                    /* match header height */
   left: 0;
-  height: calc(100vh - 60px); /* full height minus header */
-  width: 220px;           /* consistent width */
+  height: calc(100vh - 120px);  /* full height minus header + footer */
+  width: 220px;                 /* consistent width */
  
-  border-right: 1px solid #ddd;
-  overflow-y: auto;       /* allow scrolling inside sidebar if items overflow */
-  transition: all 0.3s ease;
+  
   z-index: 1000;    
-   padding-right: 10px;         /* remove inner padding */
-  margin: 0;  
+
+  margin: 0;
+  overflow-y: auto;             /* scroll if content overflows */
 }
 
-
-
+/* ===== Sidebar Links ===== */
+.tab_link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;                  /* take full sidebar width */
+  margin: 0 0 15px 0;            /* spacing between links */
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  gap: 5px;
+  transition: background 0.3s, color 0.3s;
+}
 
 .tab_link:hover {
   background: #9c4cb5;
-  color: white;
- 
+  color: #fff;
 }
 
 .active {
@@ -34,47 +45,39 @@
   font-weight: bold;
 }
 
-.logo{
-  max-width: 40px;
-   max-height: 40px;
-  border-radius: 0px;
-  margin-left: 10px;
-   padding-right:opx;
-   justify-content: space-between;
-  padding:10px;
-  padding-bottom: 8px;
-  }
-
-.tab_link {
-  margin-bottom: 15px;
-  text-decoration: none;
-  color: #333;
-  font-size: 16px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  transition: background 0.3s, color 0.3s;
-  gap:5px;
-  margin-right:25px;
-  justify-content: flex-start;
-  width: 100%;                /* ✅ take full sidebar width */
-  margin-right: 0;  
-    width: 220px;
-    display: flex;
+.tab_icon {
+  margin-right: 25px;
+  margin-bottom: 5px;
 }
 
- 
-  .tab_icon{
-margin-right: 25px;
-margin-bottom: 5px;
-  
-  }
+.logo {
+  max-width: 40px;
+  max-height: 40px;
+  border-radius: 0px;
+  margin-left: 10px;
+  padding: 10px;
+  padding-bottom: 8px;
+  justify-content: space-between;
+}
 
- 
+/* ===== Content (next to sidebar) ===== */
+.content {
+  flex: 1;
+  margin-left: 220px;             /* prevent overlap with sidebar */
+  padding: 20px;
+  background: #fff;
+  overflow-y: auto;
+  overflow-x: auto;
+  min-height: calc(100vh - 110px); /* header + footer space */
+  width: calc(100% - 220px);      /* fit remaining width */
+  min-width: 0;                   /* allow shrinking */
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .sidebar {
-    position: relative;       /* remove fixed position on mobile */
-    width: 100%;              /* take full width */
+    position: relative;       /* no fixed sidebar */
+    width: 100%;              /* full width */
     height: auto;             /* auto height */
     top: 0;
     border-right: none;
@@ -82,17 +85,20 @@ margin-bottom: 5px;
   }
 
   .tab_buttons {
-    flex-direction: row;       /* horizontal links if needed */
-    overflow-x: auto;          /* allow horizontal scrolling */
+    flex-direction: row;      /* horizontal links */
+    overflow-x: auto;         /* horizontal scroll if overflow */
     gap: 10px;
+    height: auto;
   }
 
   .tab_link {
-    flex: 0 0 auto;            /* prevent links from shrinking */
+    flex: 0 0 auto;           /* prevent shrinking */
     margin-bottom: 0;
+    width: auto;              /* auto width for horizontal layout */
   }
 
-
-
-  
+  .content {
+    margin-left: 0;           /* no sidebar offset */
+    width: 100%;
+  }
 }

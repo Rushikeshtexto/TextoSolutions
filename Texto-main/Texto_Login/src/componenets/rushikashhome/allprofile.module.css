@@ -1,38 +1,34 @@
-/* ===== Global Reset ===== */
-* {
+html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* remove body scroll */
+  overflow: hidden;
 }
 
-/* ===== Layout ===== */
 .app_layout {
   display: flex;
   flex-direction: row;
-  margin-top: 60px; /* header height */
-  min-height: calc(100vh - 50px); /* minus footer height */
+  margin-top: 60px;               /* header height */
+  height: calc(100vh - 120px);    /* viewport minus header & footer */
 }
 
-/* Sidebar fixed */
 .sidebar {
-  width: 220px;
-  background: #f4f4f4;
-  padding: 15px;
-  border-right: 1px solid #ddd;
-  position: fixed;  /* keep sidebar fixed */
-  top: 60px;        /* below header */
-  bottom: 50px;     /* above footer */
+  position: fixed;
+  top: 60px;                      /* below header */
   left: 0;
-  overflow-y: auto; /* scroll if content tall */
+  height: calc(100vh - 120px);    /* full height minus header & footer */
+  width: 220px;
+  overflow-y: auto;               /* sidebar scroll if content overflows */
 }
 
-/* Content area */
 .content {
   flex: 1;
-  margin-left: 220px;  /* avoid overlapping sidebar */
-  padding: 20px;
-  overflow-y: auto;    /* scroll if content tall */
-  min-height: calc(100vh - 60px - 50px);
+  margin-left: 220px;             /* push right of sidebar */
+  padding: 0px;
+  overflow-y: auto;               /* scroll inside content */
+  height: calc(100vh - 120px);    /* viewport minus header & footer */
 }
 
 /* ===== Profiles Section ===== */
@@ -104,11 +100,11 @@
 
 /* Zebra Rows */
 .even_row {
-  background-color: #f9f9f9;
+  background-color:white;
 }
 
 .odd_row {
-  background-color: #fff;
+  background-color:white;
 }
 
 /* Hover effect */
@@ -155,34 +151,43 @@
 }
 
 /* ===== Responsive ===== */
+/* ===== Responsive Layout ===== */
 @media (max-width: 768px) {
+  /* Stack layout vertically on mobile */
   .app_layout {
     flex-direction: column;
-    margin-top: 0;
+    margin-top: 0; /* no fixed top margin */
+    height: auto;
   }
 
+  /* Sidebar becomes top bar */
   .sidebar {
     position: relative;
     width: 100%;
+    height: auto;
     top: 0;
-    bottom: 0;
+    left: 0;
     border-right: none;
     border-bottom: 1px solid #ddd;
+    overflow-y: visible; /* no scroll on small screen */
   }
 
+  /* Content takes full width */
   .content {
     margin-left: 0;
+    width: 100%;
     padding: 15px;
-    min-height: auto;
+    height: auto;
   }
 
+  /* Search box adapts */
   .search_box {
     width: 100%;
-    margin-left: 0;
-    margin-bottom: 15px;
+    margin: 0 0 15px 0;
   }
 
+  /* Table container limited height */
   .table_container {
-    max-height: 400px; /* adjust for smaller screens */
+    max-height: 300px; /* smaller scrollable table */
   }
 }

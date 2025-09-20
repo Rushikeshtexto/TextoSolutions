@@ -1,37 +1,35 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* remove body scroll */
+  overflow: hidden;
+}
+
 .app_layout {
-    display: flex; /* sidebar + content side by side */
-    height: 100vh;
-    overflow: hidden;
-  }
-  
-  .sidebar {
-    width: 200px;       /* or whatever width you want */
-    background: #f4f4f4; /* just for visibility */
-    flex-shrink: 0; 
-    position: fixed;
-    left:0px; 
-    top:65px; /* prevent shrinking */
-    height: auto;
-    
-  }
-  
-  
-  
-  .content {
-  
-    flex: 1 1 auto;             /* take remaining space */
-    padding: 20px;
-    margin-top: 20px;
-    overflow-y: auto;
-  overflow-x: auto;
-  margin-left: 220px;
-  
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
- 
-    
-  }
+  flex-direction: row;
+  margin-top: 60px;               /* header height */
+  height: calc(100vh - 120px);    /* viewport minus header & footer */
+}
+
+.sidebar {
+  position: fixed;
+  top: 60px;                      /* below header */
+  left: 0;
+  height: calc(100vh - 120px);    /* full height minus header & footer */
+  width: 220px;
+  overflow-y: auto;               /* sidebar scroll if content overflows */
+}
+
+.content {
+  flex: 1;
+  margin-left: 220px;             /* push right of sidebar */
+  padding: 20px;
+  overflow-y: auto;               /* scroll inside content */
+  height: calc(100vh - 120px);    /* viewport minus header & footer */
+}
 
 
 .profiles_section {
@@ -218,3 +216,110 @@
     padding: 8px 16px;
     transition: background 0.3s ease;
   }
+
+  /* ===== Responsive Styles ===== */
+@media (max-width: 768px) {
+  /* Stack layout vertically */
+  .app_layout {
+    flex-direction: column;
+    margin-top: 0;
+    height: auto;
+  }
+
+  /* Sidebar becomes full width top bar */
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    top: 0;
+    left: 0;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    overflow-y: visible;
+  }
+
+  /* Content full width */
+  .content {
+    margin-left: 0;
+    width: 100%;
+    height: auto;
+    padding: 15px;
+  }
+
+  /* Profiles section */
+  .profiles_section {
+    padding: 10px;
+    height: auto;
+  }
+
+  /* Search box takes full width */
+  .search_box {
+    width: 100%;
+    margin: 0 0 15px 0;
+  }
+
+  /* Table scrolls horizontally */
+  .table_container {
+    overflow-x: auto;
+    max-height: 300px;
+  }
+
+  .profiles_table {
+    min-width: 600px; /* allow horizontal scroll if many columns */
+  }
+
+  /* Pagination stacks */
+  .paginationcontainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .pagination {
+    justify-content: flex-start;
+  }
+
+  .page_info {
+    text-align: left;
+  }
+
+  /* Buttons */
+  .export {
+    width: 100%;
+    max-width: none;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .back {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Even smaller adjustments for mobile */
+  .profiles_table {
+    min-width: 400px;
+    font-size: 12px;
+  }
+
+  .search_box {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .pagination button {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .back {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+}

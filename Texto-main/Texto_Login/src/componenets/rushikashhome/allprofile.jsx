@@ -6,7 +6,7 @@ import styles from  "./allprofile.module.css"
 import FrontendPage from "./frontpage";
 import SideBar from "../sidebar/SideBar";
 import Header from "../header/Header";
-import Footer from "../footer/Footer";
+import Footer from "../footer/Footer";////////
 import Dropdown from "./dropdown";
 import DisplayRange from "./displayrange";
 
