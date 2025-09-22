@@ -30,8 +30,6 @@ html, body {
   overflow-y: auto;               /* scroll inside content */
   height: calc(100vh - 120px);    /* viewport minus header & footer */
 }
-
-
 .profiles_section {
     background: #fff;
     padding: 1px;
@@ -39,13 +37,17 @@ html, body {
     height: 100%;
     display: flex;
     flex-direction: column;
-
+    overflow-x: auto;
     overflow-y: auto;
- 
+    width: 100%;
   }
   
   /* Title */
- 
+  .profiles_section {
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
   
   
   /* Search Box */
@@ -71,7 +73,8 @@ html, body {
     overflow-y: auto;     /* scroll only if content exceeds container */
     border: 1px solid #ddd;
     border-radius: 8px;
-    min-height: 0;        /* ⚡ important for flex scroll to work properly */
+    min-height: 100px;        /* ⚡ important for flex scroll to work properly */
+    max-height: 500px;
   }
   
   /* Table Styling */
@@ -198,7 +201,8 @@ html, body {
     font-weight: 500;
     color: #333;
     margin-left: 0px;
-    max-width: 70px;
+    max-width: 100px;
+    margin-bottom: -20px;
     
   }
   
@@ -216,110 +220,3 @@ html, body {
     padding: 8px 16px;
     transition: background 0.3s ease;
   }
-
-  /* ===== Responsive Styles ===== */
-@media (max-width: 768px) {
-  /* Stack layout vertically */
-  .app_layout {
-    flex-direction: column;
-    margin-top: 0;
-    height: auto;
-  }
-
-  /* Sidebar becomes full width top bar */
-  .sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-    top: 0;
-    left: 0;
-    border-right: none;
-    border-bottom: 1px solid #ddd;
-    overflow-y: visible;
-  }
-
-  /* Content full width */
-  .content {
-    margin-left: 0;
-    width: 100%;
-    height: auto;
-    padding: 15px;
-  }
-
-  /* Profiles section */
-  .profiles_section {
-    padding: 10px;
-    height: auto;
-  }
-
-  /* Search box takes full width */
-  .search_box {
-    width: 100%;
-    margin: 0 0 15px 0;
-  }
-
-  /* Table scrolls horizontally */
-  .table_container {
-    overflow-x: auto;
-    max-height: 300px;
-  }
-
-  .profiles_table {
-    min-width: 600px; /* allow horizontal scroll if many columns */
-  }
-
-  /* Pagination stacks */
-  .paginationcontainer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .pagination {
-    justify-content: flex-start;
-  }
-
-  .page_info {
-    text-align: left;
-  }
-
-  /* Buttons */
-  .export {
-    width: 100%;
-    max-width: none;
-    text-align: center;
-    margin-top: 10px;
-  }
-
-  .back {
-    position: relative;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin-top: 10px;
-    text-align: center;
-  }
-}
-
-@media (max-width: 480px) {
-  /* Even smaller adjustments for mobile */
-  .profiles_table {
-    min-width: 400px;
-    font-size: 12px;
-  }
-
-  .search_box {
-    font-size: 12px;
-    padding: 8px;
-  }
-
-  .pagination button {
-    padding: 5px 8px;
-    font-size: 12px;
-  }
-
-  .back {
-    font-size: 14px;
-    padding: 6px 10px;
-  }
-}

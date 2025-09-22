@@ -154,8 +154,9 @@ const ViewList = () => {
   });
 //   console.log("Data  ",list[0]);
 
-  return (<>
-  <Header/>
+  return (
+    <> 
+   <Header/>
     <div className={styles.app_layout}>
     <div className={styles.sidebar}>
      < SideBar/>
@@ -177,14 +178,14 @@ const ViewList = () => {
         
         <hr/>
             
-        <div>
+        <div style={{margin:"80px 0"}}>
         {list ? (
     // If list is an array
     Array.isArray(list) ? (
       list.map((item) => (
-        <div >
+        <div key={item.id} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px 0" ,borderRadius:"10px"}}>
           <p><strong>Created At:</strong> {new Date(item.created_at).toLocaleString()}</p>
-          <p ><strong>Updated At:</strong> {new Date(item.updated_at).toLocaleString()}</p>
+          <p style={{marginLeft:"760px" ,marginTop:"-40px"}}><strong>Updated At:</strong> {new Date(item.updated_at).toLocaleString()}</p>
 
         </div>
       ))
@@ -199,19 +200,18 @@ const ViewList = () => {
     "No data"
   )}
         </div>
+        <div className="profilescontent">
 
-
-       
-
-             <div className={styles.profiles_section}>
+            <div className={styles.profiles_section}>
             {selectedUser ? (
        <></>
       ):(<>
-
-            <hr></hr>
               <h4>PROFILES</h4>
-              <button className={styles.export} onClick={() => {downloadExcel()}}>Export</button>
-             
+                <hr/>
+                 <Button variant="contained"
+                  color="success"
+                  startIcon={<Download />} onClick={() => {downloadExcel()}}  className={styles.export}> Export </Button>
+           
               <input
                 type="text"
                 placeholder="🔍 Search"
@@ -257,7 +257,6 @@ const ViewList = () => {
                             <td>{u.city}</td>
                             <td>{u.state}</td>
                             <td>{u.country}</td>
-                           
                           </tr>
                         ))}
                       </tbody>
@@ -292,7 +291,10 @@ const ViewList = () => {
             
         </div>
     </div>
-   
+    </div>
+    <div>
+      
+    </div>
  <Footer/>
   </>
 

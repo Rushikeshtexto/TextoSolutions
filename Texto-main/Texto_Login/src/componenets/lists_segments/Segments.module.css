@@ -1,0 +1,32 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* remove body scroll */
+  overflow: hidden;
+}
+
+.app_layout {
+  display: flex;
+  flex-direction: row;
+  margin-top: 60px;               /* header height */
+  height: calc(100vh - 120px);    /* viewport minus header & footer */
+}
+
+.sidebar {
+  position: fixed;
+  top: 60px;                      /* below header */
+  left: 0;
+  height: calc(100vh - 120px);    /* full height minus header & footer */
+  width: 220px;
+  overflow-y: auto;               /* sidebar scroll if content overflows */
+}
+
+.content {
+  flex: 1;
+  margin-left: 220px;             /* push right of sidebar */
+  padding: 0px;
+  overflow-y: auto;               /* scroll inside content */
+  height: calc(100vh - 120px);    /* viewport minus header & footer */
+}

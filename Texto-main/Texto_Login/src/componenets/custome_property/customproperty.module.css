@@ -1,0 +1,199 @@
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* remove body scroll */
+  overflow: hidden;
+}
+
+.app_layout {
+  display: flex;
+  flex-direction: row;
+  margin-top: 60px;               /* header height */
+  height: calc(100vh - 120px);    /* viewport minus header & footer */
+}
+
+.sidebar {
+  position: fixed;
+  top: 60px;                      /* below header */
+  left: 0;
+  height: calc(100vh - 120px);    /* full height minus header & footer */
+  width: 220px;
+  overflow-y: auto;               /* sidebar scroll if content overflows */
+}
+
+.content {
+  flex: 1;
+  margin-left: 220px;             /* push right of sidebar */
+  padding: 0px;
+  overflow-y: auto;               /* scroll inside content */
+  height: calc(100vh - 120px);    /* viewport minus header & footer */
+}
+
+
+.profiles_section {
+    background: #fff;
+    padding: 1px;
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+    overflow-y: auto;
+    width: 100%;
+  }
+  
+  /* Title */
+  .profiles_section {
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  
+  
+  /* Search Box */
+  .search_box {
+    margin-bottom: 20px;
+    margin-left: auto; /* align right */
+    padding: 10px 14px;
+    width: 280px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    outline: none;
+  }
+  
+  .search_box:focus {
+    border-color: #4caf50;
+    box-shadow: 0px 0px 4px rgba(76, 175, 80, 0.4);
+  }
+  
+  /* Table Container */
+  .table_container {
+    flex: 1 1 auto;       /* fill remaining vertical space */
+    overflow-y: auto;     /* scroll only if content exceeds container */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    min-height: 0;        /* ⚡ important for flex scroll to work properly */
+    max-height: 500px;
+    overflow-x: auto;
+  }
+  
+  /* Table Styling */
+  .profiles_table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .profiles_table th{
+    text-align: center;
+    /* border:1px solid #333; */
+    padding: 12px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  
+  }
+  
+  .profiles_table td {
+    padding: 12px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    text-align: left;
+  }
+  
+  .profiles_table th {
+    position: sticky;
+    top: 0;
+    background-color: #4caf50;
+    color: white;
+    z-index: 10;
+    text-transform: uppercase;
+  }
+  @media (max-width: 720px) {
+    .app_layout {
+      flex-direction: column; /* stack sidebar and content */
+    }
+  }
+  
+  .profiles_table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #4caf50;
+    color: white;
+    z-index: 5;
+  }
+  /* Zebra Rows */
+  .even_row {
+    background-color: #f9f9f9;
+  }
+  
+  .odd_row {
+    background-color: #fff;
+  }
+  
+  /* Hover effect */
+  .profiles_table tr:hover {
+    background-color: #e6f7ff;
+    transition: 0.3s;
+  }
+  
+  /* No entries */
+  .no_entries {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  .action{
+    border-collapse:collapse;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    
+  }
+
+  .td_left {
+  text-align: left !important;
+}
+
+
+
+
+/* Buttons container */
+.segments_buttons {
+  display: flex;
+  gap: 10px; /* space between buttons */
+  flex-wrap: wrap; /* wrap buttons on smaller screens */
+  margin-top: -60px;
+  margin-bottom: 8vh;
+  justify-content: flex-start
+}
+
+/* Buttons */
+.segments_buttons .btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff; /* blue button */
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+h2{
+  margin-top: -20px;
+  color: #333;
+}
+
+.segments_buttons .btn:hover {
+  background-color: #0056b3; /* darker blue on hover */
+}
+
+/* Specific button variations */
+.segments_buttons .add-segment {
+  background-color: #28a745; /* green button */
+}
+
+.segments_buttons .add-segment:hover {
+  background-color: #1e7e34;
+}

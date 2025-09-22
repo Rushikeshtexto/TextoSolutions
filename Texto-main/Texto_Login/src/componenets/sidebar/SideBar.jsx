@@ -6,6 +6,8 @@ import styles from  "./SideBar.module.css";
 import { FaHome} from "react-icons/fa";
 import { FaUser} from "react-icons/fa";
 import { FaList } from "react-icons/fa"; 
+import { BiCustomize } from "react-icons/bi";
+
 const SideBar = ({ setLoading }) => {
   const [activeTab, setActiveTab] = useState();
     return (
@@ -34,6 +36,15 @@ const SideBar = ({ setLoading }) => {
         >     <FaList className={styles.tab_icon} />
           LIST & SEGMENTS
         </a>
+
+          <a
+          href="/customproperty"
+          className={`${styles.tab_link} ${activeTab === "segments" ? styles.active : ""}`}
+          onClick={() => setActiveTab("segments")}
+        >     <BiCustomize className={styles.tab_icon} />
+          Custome Property
+        </a>
+
         {/* <a href="/list" className={styles.tab_link}>
           List & Segments Rahul
         </a> */}

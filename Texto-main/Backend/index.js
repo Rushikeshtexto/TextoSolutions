@@ -13,7 +13,7 @@ import xlsx from "xlsx";
 import db from "./db/DB.js";
 import ExcelJS from "exceljs"
 import fs from "fs";
-
+import customRoutes from "./routes/customroute.js";
 
 import csvParser from "csv-parser";  // since you’re using ES modules
 
@@ -369,7 +369,7 @@ app.get("/excelusers/:id", (req, res) => {
 
 app.post("/lists/:Id", (req, res) => {
   db.query("SELECT * FROM lists_segments WHERE id=?", [req.params.Id], (err, results) => {
-    res.json(results);
+    res.json(results)
   });
 });
 
@@ -425,6 +425,7 @@ app.get("/export/users/:id", (req, res) => {
 
 // User routes
 app.use("/users", userRoutes);
+app.use("/custom", customRoutes); 
 
 app.listen(5000, () => {
   console.log("🚀 Server running on http://localhost:5000");

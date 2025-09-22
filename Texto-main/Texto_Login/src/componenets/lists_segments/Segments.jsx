@@ -2,7 +2,9 @@ import React,{useState} from 'react'
 import { Button, Form, Row, Col, Card } from "react-bootstrap";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Header from '../header/Header';
-
+import Footer from "../footer/Footer"
+import SideBar from '../sidebar/SideBar';
+import styles from "../lists_segments/Segments.module.css";
 
 const Segments = () => {
 
@@ -42,7 +44,14 @@ const Segments = () => {
       const segmentStructure = { logic, conditions };
   return (
     <>
-    <Header/>
+    <Header/>  
+    <div className={styles.app_layout}> 
+<div className={styles.sideBar}>
+<SideBar/>
+
+</div>
+
+<div className={styles.content}>
     <Card className="p-3 shadow-sm">
       <h3 className="mb-3">Segment Builder</h3>
 
@@ -146,9 +155,13 @@ const Segments = () => {
         <pre>{JSON.stringify(segmentStructure, null, 2)}</pre>
       </Card>
     </Card>
+    </div>
+    </div>
+    <Footer/>
     </>
+
   );
   
 }
 
-export default Segments
+export default Segments;

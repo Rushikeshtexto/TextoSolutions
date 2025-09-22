@@ -10,6 +10,8 @@ import Profile from "./componenets/rushikashhome/allprofile.jsx";
 import Home from "./componenets/rushikashhome/Home.jsx";
 import UserDetails from "./componenets/rushikashhome/UserDetails.jsx";
 import ViewList from "./componenets/lists_segments/ViewList.jsx";
+import Customproperty from "./componenets/custome_property/customproperty.jsx";
+
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
         {/* Individual user details */}
         <Route path="/profiles/:id" element={<UserDetails />} />
         <Route path="/viewlist/:id" element={<ViewList/>}/>
+        <Route path="/addsegment" element={<Segments/>}/>
+        <Route path="/customproperty" element={<Customproperty/>}></Route>
       </Routes>
     </Router>
   );

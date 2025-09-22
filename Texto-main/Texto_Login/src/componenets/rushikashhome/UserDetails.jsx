@@ -7,15 +7,15 @@ import Header from "../header/Header";
 import Footer from "../footer/Footer";
 import SideBar from "../sidebar/SideBar";
 
-
-
 const UserDetails = () => {
-  const { id } = useParams(); // use plain id from URL
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [property, setProperty] = useState({ name: "", value: "", datatype: "" });
 
   // Fetch user by ID
   useEffect(() => {
@@ -59,6 +59,17 @@ const UserDetails = () => {
   if (error) return <p>{error}</p>;
   if (!user) return <p>User not found</p>;
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProperty((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = () => {
+    // Temporary: just close popup for now
+    console.log("Property saved:", property);
+    setShowPopup(false);
+  };
+
   return (
     <>
       <Header />
@@ -71,59 +82,116 @@ const UserDetails = () => {
           <button className={styles.backbtn} onClick={() => navigate(-1)}>
             ← Back
           </button>
-        <div className={styles.side}>
-          <h2 className={styles.profiletitle}>
-            {user.first_name ? user.first_name.charAt(0).toUpperCase() + user.first_name.slice(1) : "Profile"}'s Profile
-          </h2>
 
-          <div className={styles.profileinfo}>
-          <p>
-              <span className={styles.label}>First Name:</span>
-              <span className={styles.value}>{user.first_name}</span>
-            </p>
+          <div className={styles.side}>
+            <h2 className={styles.profiletitle}>
+              {user.first_name
+                ? user.first_name.charAt(0).toUpperCase() + user.first_name.slice(1)
+                : "Profile"}'s Profile
+            </h2>
 
-            <p>
-              <span className={styles.label}>Last Name :</span>
-              <span className={styles.value}>{user.last_name}</span>
-            </p>
+            <div className={styles.profileinfo}>
+              <p>
+                <span className={styles.label}>First Name:</span>
+                <span className={styles.value}>{user.first_name}</span>
+              </p>
+              <p>
+                <span className={styles.label}>Last Name:</span>
+                <span className={styles.value}>{user.last_name}</span>
+              </p>
+              <p>
+                <span className={styles.label}>Email:</span>
+                <span className={styles.value}>{maskEmail(user.email)}</span>
+              </p>
+              <p>
+                <span className={styles.label}>Phone:</span>
+                <span className={styles.value}>{maskPhone(user.phone)}</span>
+              </p>
+              <p>
+                <span className={styles.label}>Address 1:</span>
+                <span className={styles.value}>{user.address_1 || ""}</span>
+              </p>
+              <p>
+                <span className={styles.label}>Address 2:</span>
+                <span className={styles.value}>{user.address_2 || ""}</span>
+              </p>
+              <p>
+                <span className={styles.label}>City:</span>
+                <span className={styles.value}>{user.city || ""}</span>
+              </p>
+              <p>
+                <span className={styles.label}>State:</span>
+                <span className={styles.value}>{user.state || ""}</span>
+              </p>
+              <p>
+                <span className={styles.label}>Country:</span>
+                <span className={styles.value}>{user.country || ""}</span>
+              </p>
+            </div>
+          </div>
 
-            <p>
-              <span className={styles.label}>Email:</span>
-              <span className={styles.value}>{maskEmail(user.email)}</span>
-            </p>
+          <div className={styles.listsegments}>
+            <h3>Lists & Segments</h3>
+          </div>
 
-            <p>
-              <span className={styles.label}>Phone:</span>
-              <span className={styles.value}>{maskPhone(user.phone)}</span>
-            </p>
-
-            <p>
-              <span className={styles.label}>Address 1:</span>
-              <span className={styles.value}>{user.address_1 || ""}</span>
-            </p>
-
-           <p>
-              <span className={styles.label}>Address 2:</span>
-              <span className={styles.value}>{user.address_2 || ""}</span>
-            </p>
-            <p>
-              <span className={styles.label}>City:</span>
-              <span className={styles.value}>{user.city || ""}</span>
-            </p>
-
-            <p>
-              <span className={styles.label}>State:</span>
-              <span className={styles.value}>{user.state || ""}</span>
-            </p>
-
-            <p>
-              <span className={styles.label}>Country:</span>
-              <span className={styles.value}>{user.country || ""}</span>
-            </p>
+          <div className={styles.listlogs}>
+            <h4>Information</h4>
+            <div className={styles.customproperty}>
+              <p>Custom Properties</p>
+              <button onClick={() => setShowPopup(true)}>+ Add Property</button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Popup container */}
+      {showPopup && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popupContainer}>
+            <h3>Add Custom Property</h3>
+
+            <label className={styles.popupLabel}>
+              Name:
+              <input
+                type="text"
+                name="name"
+                value={property.name}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label className={styles.popupLabel}>
+              Value:
+              <input
+                type="text"
+                name="value"
+                value={property.value}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label className={styles.popupLabel}>
+              Datatype:
+              <select
+                name="datatype"
+                value={property.datatype}
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="string">String</option>
+                <option value="number">Number</option>
+                <option value="boolean">Boolean</option>
+              </select>
+            </label>
+
+            <div className={styles.popupButtons}>
+              <button onClick={handleSave}>Save</button>
+              <button onClick={() => setShowPopup(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </>
   );

@@ -106,7 +106,9 @@ const List = () => {
                 Add List
               </button>
 
-              <button className={`${styles.btn} ${styles.add_segment}`}>
+              <button 
+              onClick={()=> navigate("/addsegment")}
+              className={`${styles.btn} ${styles.add_segment}`}>
                 Add Segment
               </button>
             </div>
