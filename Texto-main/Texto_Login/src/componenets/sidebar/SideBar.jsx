@@ -42,7 +42,7 @@ const SideBar = ({ setLoading }) => {
           className={`${styles.tab_link} ${activeTab === "segments" ? styles.active : ""}`}
           onClick={() => setActiveTab("segments")}
         >     <BiCustomize className={styles.tab_icon} />
-          Custome Property
+        PROPERTY
         </a>
 
         {/* <a href="/list" className={styles.tab_link}>

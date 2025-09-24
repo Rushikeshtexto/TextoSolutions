@@ -108,10 +108,13 @@ border-radius: 10px;
   max-width: 500px;   
   height: 500px;      /* maximum width */
   width: 100%;               /* take full width up to max-width */
-  border: 2px solid black;
+
   margin-top:50px;    /* top right bottom left */
   flex-shrink: 0; 
-  border-radius:10px           /* prevent shrinking if inside flex container */
+  
+  margin-left: 10px;
+  background-color:  #f0f0f0;
+          /* prevent shrinking if inside flex container */
 }
 .listlogs h4{
 
@@ -126,17 +129,19 @@ margin-left: 5px;
 }
 
 .customproperty p {
-  margin: 0 5px;                /* remove default p margin */
+  margin: 0 23px;  
+           /* remove default p margin */
 }
 
 .customproperty button {
-  padding: 3px 10px;
+  padding: 2px 10px;
   border-radius: 6px;
   border: 1px solid #333;
   background: transparent;
   cursor: pointer;
   font-size: 15px;
   margin-right: 10px;
+  margin-top: 5px;
 }
 
 
@@ -195,7 +200,35 @@ margin-left: 5px;
   padding: 6px 12px;
   border-radius: 5px;
   cursor: pointer;
+}.dropdownWrapper {
+  position: relative;
+  width: 100%;
 }
+
+.suggestionList {
+  border: 1px solid #ccc;
+  max-height: 180px; /* scrollable */
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: #fff;
+  position: absolute;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
+
+.suggestionItem {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.suggestionItem:hover {
+  background-color: #f0f0f0;
+}
+
 
 .cancelBtn {
   background: #ccc;

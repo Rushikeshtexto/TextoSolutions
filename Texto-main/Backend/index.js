@@ -14,7 +14,7 @@ import xlsx from "xlsx";
 import db from "./db/DB.js";
 import ExcelJS from "exceljs"
 import fs from "fs";
-
+import customRoutes from "./routes/customroute.js"
 
 import csvParser from "csv-parser";  // since you’re using ES modules
 
@@ -495,6 +495,7 @@ app.delete("/property", (req, res) => {
 
 // User routes
 app.use("/users", userRoutes);
+app.use("/custom", customRoutes); 
 
 
 app.listen(5000, () => {
