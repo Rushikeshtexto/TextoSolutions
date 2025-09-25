@@ -36,8 +36,8 @@ html, body {
     padding: 20px;
   background-color:white; /* light gray background */
  
-  margin: 0;               /* remove top margin */
-  margin-top: 0;           /* explicitly remove space from top */
+               /* remove top margin */
+  margin-top: 20px;           /* explicitly remove space from top */
   font-family: Arial, sans-serif;
 
   /* Optional: ensure it doesn't overlap fixed header */

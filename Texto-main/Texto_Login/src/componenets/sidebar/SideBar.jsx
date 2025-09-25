@@ -27,7 +27,7 @@ const SideBar = ({ setLoading }) => {
           onClick={() => setActiveTab("profiles")}
           
         >  <FaUser className={styles.tab_icon} />
-           PROFILE
+           PROFILES
         </a>
         <a
           href="/list"

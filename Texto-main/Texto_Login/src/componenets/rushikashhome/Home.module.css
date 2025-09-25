@@ -48,6 +48,19 @@ html, body {
   justify-content: center;
 }
 
+
+.Homepage{
+   width: 80vw;     /* 90% of viewport width */
+  height: 70vh;    /* 70% of viewport height */
+  border: 2px solid #ccc;
+  position: relative;
+padding: 20px;
+margin-left: 10px;
+box-shadow: 2px 2px 5px ;}
+.app_layout {
+    display: flex; /* sidebar + content side by side */
+    height: 100vh;
+  }
 /* ✅ Responsive: Sidebar collapses on small screens */
 /* ✅ Responsive: Sidebar collapses on small screens */
 @media (max-width: 768px) {

@@ -431,14 +431,20 @@ app.get("/property", (req, res) => {
   });
 });
 
-// Get properties for a user
-// Get all properties (no user_id)
+
+
 app.get("/property/users/:id/properties", (req, res) => {
-  db.query("SELECT * FROM add_property WHERE is_deleted = 0", (err, results) => {
-    if (err) return res.status(500).json({ error: err });
-    res.json(results);
-  });
+  const userId = req.params.id;
+  db.query(
+    "SELECT * FROM add_property WHERE is_deleted = 0 AND user_id = ?",
+    [userId],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: err });
+      res.json(results);
+    }
+  );
 });
+
 
 // Add new property
 app.post("/property/users/:id/property", (req, res) => {
@@ -448,14 +454,15 @@ app.post("/property/users/:id/property", (req, res) => {
     return res.status(400).json({ error: "All fields are required" });
 
   db.query(
-    "INSERT INTO add_property (name, value, type) VALUES (?, ?, ?)",
-    [name, value, type],
+    "INSERT INTO add_property (user_id, name, value, type) VALUES (?, ?, ?, ?)",
+    [req.params.id, name, value, type],
     (err, result) => {
-      if (err) return res.status(500).json({ error: err });
+      if (err) return res.status(500).json({ error: err.message });
       res.json({ id: result.insertId, name, value, type });
     }
   );
 });
+
 
 // Edit property
 app.put("/property", (req, res) => {
