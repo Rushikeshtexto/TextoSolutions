@@ -87,15 +87,44 @@ export const addUserProperty = (req, res) => {
   const { userId } = req.params;
   const { name, type, value } = req.body;
 
+  // 1️⃣ Insert into user_custom_property
   const sql = `
     INSERT INTO user_custom_property (user_id, name, type, value, created_at, updated_at)
     VALUES (?, ?, ?, ?, NOW(), NOW())
   `;
   db.query(sql, [userId, name, type, value], (err, result) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ message: "User property added", id: result.insertId });
+
+    // 2️⃣ Check if property exists in custom_property
+    const checkSql = "SELECT * FROM custom_property WHERE name = ? AND is_deleted=0";
+    db.query(checkSql, [name], (err, customResults) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      if (customResults.length === 0) {
+        // 3️⃣ Insert into custom_property if unique
+        const insertCustomSql = `
+          INSERT INTO custom_property (name, type, created_at, updated_at)
+          VALUES (?, ?, NOW(), NOW())
+        `;
+        db.query(insertCustomSql, [name, type], (err, customInsertResult) => {
+          if (err) return res.status(500).json({ error: err.message });
+          // Both inserted successfully
+          return res.status(201).json({
+            message: "User property added and new master property created",
+            id: result.insertId
+          });
+        });
+      } else {
+        // Property already exists in custom_property
+        return res.status(201).json({
+          message: "User property added (already exists in master properties)",
+          id: result.insertId
+        });
+      }
+    });
   });
 };
+
 
 export const updateUserProperty = (req, res) => {
   const { id } = req.params;
