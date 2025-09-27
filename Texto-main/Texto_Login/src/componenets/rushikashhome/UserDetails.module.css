@@ -109,13 +109,13 @@ border-radius: 10px;
 
 .listlogs {
   max-width: 500px;   
-  height: 500px;      /* maximum width */
+  max-height: 300px;      /* maximum width */
   width: 100%;               /* take full width up to max-width */
 
   margin-top:50px;    /* top right bottom left */
   flex-shrink: 0; 
   
-  margin-left: 10px;
+  margin-left: 13px;
   background-color:  #f0f0f0;
           /* prevent shrinking if inside flex container */
 }
@@ -259,12 +259,22 @@ margin-left: 5px;
 }
 
 .Tablecontainer {
-  width: 90%;
+  max-width: 400px;
   border-collapse: collapse;
   margin-top: 15px;
-  margin-left: 25px;
+  margin-left: 45px;
   font-family: Arial, sans-serif;
   font-size: 14px;
+  overflow-y: auto;
+ 
+ 
+ 
+  /* Add these */
+  max-height: 200px;   /* or height: 400px; */
+  overflow-y: auto;    /* vertical scroll */
+  display: inline-block;      /* make table scrollable */
+
+
 }
 
 .Tablecontainer th,
@@ -277,10 +287,21 @@ margin-left: 5px;
 .Tablecontainer th {
   background-color: #4caf50;
   font-weight: bold;
+  
 }
+.Tablecontainer tbody {
+  display: block;
+  max-height: 300px;     /* set scroll area */
+  overflow-y: auto;
+  width: 100%;
+}
+
 
 .Tablecontainer tr {
   background-color: #fafafa;
+   display: table;
+  table-layout: fixed;
+  width: 100%;
 }
 
 .Tablecontainer tr:hover {
