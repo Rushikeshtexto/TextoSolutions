@@ -15,8 +15,11 @@ import db from "./db/DB.js";
 import ExcelJS from "exceljs"
 import fs from "fs";
 import customRoutes from "./routes/customroute.js"
+import { v4 as uuidv4 } from "uuid";
 
 import csvParser from "csv-parser";  // since you’re using ES modules
+import { authenticate } from "../Backend/middleware/middleware.js";
+
 
 
 const app = express();
@@ -121,14 +124,13 @@ app.get("/logout", (req, res) => {
 const upload = multer({ dest: "uploads/" });
 
 
-
-app.post("/upload", upload.single("file"), async (req, res) => {
+app.post("/upload", authenticate, upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-
+    const name = req.body.name
     const fileName = req.file.originalname;
     const fileExt = fileName.split(".").pop().toLowerCase();
-
+    const emailuserid = req.user.id; 
     const allowedExt = ["xls", "xlsx", "csv"];
     if (!allowedExt.includes(fileExt)) {
       return res
@@ -138,24 +140,30 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 
     // Insert into lists_segments first
     let fileId;
+    let result ="";
     try {
       const [segmentResult] = await db
         .promise()
         .query(
-          "INSERT INTO lists_segments (name, type, profiles) VALUES (?, ?, ?)",
-          [fileName, "list", 0] // will update profiles count later
+          "INSERT INTO lists_segments (name,file_name, type, profiles) VALUES (?,?, ?, ?)",
+          [name ,fileName, "list", 0] // will update profiles count later
         );
-      fileId = segmentResult.insertId;
+        
+        const [rows] = await db.promise().query(
+  "SELECT id FROM lists_segments WHERE file_name=? ORDER BY created_at DESC LIMIT 1",
+  [fileName]
+);
+     fileId = rows[0].id;
       console.log("✅ Inserted fileId:", fileId);
     } catch (err) {
       console.error("❌ lists_segments insert error:", err);
       return res.status(500).json({ error: "lists_segments insert failed" });
     }
-
+   
     let totalRows = 0;
     const BATCH_SIZE = 5000;
     let batch = [];
-
+    let updatedrows = 0;
     // Helper to insert batch
     async function insertBatch(batch) {
       if (batch.length === 0) return;
@@ -163,110 +171,238 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       try {
         const [result] = await db.promise().query(
           `INSERT INTO excelusers 
-              (first_name,last_name, email, address_1,address_2, file_id, phone, city, state,country) 
+              (id ,first_name,last_name, email, address_1,address_2, file_id, phone, city, state,country,user_id,property) 
            VALUES ? 
            ON DUPLICATE KEY UPDATE 
               first_name=VALUES(first_name),
               last_name = VALUES(last_name),
-              email=VALUES(email),
               address_1=VALUES(address_1),
               address_2=VALUES(address_2),             
               file_id=VALUES(file_id),
               city=VALUES(city),
               state=VALUES(state),
-              country=VALUES(country)`,
+              country=VALUES(country),
+              user_id=VALUES(user_id),
+               property=VALUES(property)`,
           [batch]
         );
-        console.log(`✅ Inserted/Updated ${result.affectedRows} rows`);
+        updatedrows += result.changedRows;
+        console.log(`Inserted: ${result.affectedRows - result.changedRows} rows`);
+        console.log(`Updated: ${result.changedRows} rows`);
       } catch (err) {
-  console.error("❌ excelusers insert/update error:", err);
-  throw err; // bubble up to main catch
-}
+        console.error("❌ excelusers insert/update error:", err);
 
-
+      }
     }
 
-    if (fileExt === "csv") {
+    // async function insertCustomBatch(customBatch) {
+    //   if (customBatch.length === 0) return;
+
+    //   try {
+    //     const [result] = await db.promise().query(
+    //       `INSERT INTO property
+    //           (row_id,file_id, property_name, property_value) 
+    //        VALUES ?`,
+    //       [customBatch]
+    //     );
+    //     console.log(`✅ Inserted ${result.affectedRows} custom property rows`);
+    //   } catch (err) {
+    //     console.error("❌ user_custom_property insert error:", err);
+    //   }
+    // }
+
+    let customBatch = [];
+
+
+    // Process file based on extension
+    // Normalize headers to lowercase and trim spaces
+    // For CSV, also remove BOM and surrounding quotes  
+
+
+const FIXED_HEADERS = [
+  "first_name","last_name","address_1","address_2",
+  "phone","email","city","state","country"
+];
+
+
+const invalidRows = [];
+    if (fileExt === "csv") {   
       // Handle CSV with stream
-      const stream = fs.createReadStream(req.file.path).pipe(csvParser());
-
+      const stream = fs.createReadStream(req.file.path).pipe(csvParser({
+        mapHeaders: ({ header }) => {
+          if (!header) return null;
+          return header
+            .replace(/^\uFEFF/, "")   // remove BOM if present
+            .replace(/^"|"$/g, "")    // 🔥 remove surrounding quotes
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, "_");    // spaces → underscores
+        }
+      }));
+      
+// Object.keys(obj).forEach(key => {
+//   if (!FIXED_HEADERS.includes(key)) {
+//     customData[key] = obj[key];
+//   }
+// });
+      stream.on("headers", (headers) => {
+        console.log("Headers detected:", headers.map(h => JSON.stringify(h)));
+      });
       for await (const row of stream) {
-        batch.push([
-          row.First_Name || row.first_name || row.FIRST_NAME || "",
-          row.Last_Name || row.last_name || row.LAST_NAME || "",
-          row.Email || row.email || row.EMAIL || "",
-          row.Address_1 || row.address_1 || row.ADDRESS_1 || "",
+        const rawPhone = (row.Phone || row.phone || row.PHONE || "").toString().trim();
 
-          row.Address_2 || row.address_2 || row.ADDRESS_2 || "",
-          fileId,
-          (row.Phone || row.phone || row.PHONE || "").toString(),
-          row.City || row.city || row.CITY || "",
-          row.State || row.state || row.STATE || "",
-          row.Country || row.country || row.COUNTRY || "",
+const phone = isValidPhone(rawPhone) ? rawPhone : null;
+if (!isValidPhone(rawPhone)) {
+  invalidRows.push({
+    rowNumber: idx + 1, 
+    phone: rawPhone
+  });
+}
+        const userId = uuidv4();
+        // console.log("first name ",row.first_name);
+        // Build fixed data row
+  const fixedRow = [
+    userId,
+    row.First_Name || row.first_name || row.FIRST_NAME || "",
+    row.Last_Name || row.last_name || row.LAST_NAME || "",
+    row.Email || row.email || row.EMAIL || "",
+    row.Address_1 || row.address_1 || row.ADDRESS_1 || "",
+    row.Address_2 || row.address_2 || row.ADDRESS_2 || "",
+    fileId,
+    phone,
+    row.City || row.city || row.CITY || "",
+    row.State || row.state || row.STATE || "",
+    row.Country || row.country || row.COUNTRY || "",
+    emailuserid
+  ];
 
-        ]);
+  batch.push(fixedRow);
+  const customData = {};
+  Object.keys(row).forEach((key) => {
+    const normalized = key.toLowerCase().trim();
+    if (!FIXED_HEADERS.includes(normalized)) {
+      customData[normalized] = row[key] || "";
+    }
+  });
+
+  // 🔹 Add JSON string to batch
+  fixedRow.push(JSON.stringify(customData));
+
+  // Now handle custom fields (anything not in FIXED_HEADERS)
+  // Object.keys(row).forEach((key) => {
+  //   const normalized = key.toLowerCase().trim();
+  //   if (!FIXED_HEADERS.includes(normalized)) {
+  //     customBatch.push([
+  //       userId,              // placeholder for user_id (we’ll map later after insert)
+  //       fileId,            // file_id
+  //       normalized,        // property_name
+  //       row[key] || ""     // property_value
+  //     ]);
+  //   }
+  // });
+        // console.log("batch ",batch);
 
         totalRows++;
         if (batch.length >= BATCH_SIZE) {
           await insertBatch(batch);
+          // await insertCustomBatch(customBatch);
+          // customBatch = [];
           batch = [];
         }
       }
     } else {
       // Handle Excel with ExcelJS streaming
-      const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.readFile(req.file.path);
+  const workbook = new ExcelJS.Workbook();
+  const stream = fs.createReadStream(req.file.path);
 
-      const worksheet = workbook.worksheets[0];
-      const headers = worksheet.getRow(1).values;
+  await workbook.xlsx.read(stream);
 
-      worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 1) return; // skip header
+  const worksheet = workbook.worksheets[0];
 
-        const obj = {};
-        headers.forEach((h, i) => {
-          if (h) obj[h.toString().toLowerCase()] = row.values[i];
-        });
+  let headers = [];
+  worksheet.eachRow({ includeEmpty: false }, async (row, rowNumber) => {
+    if (rowNumber === 1) {
+      headers = row.values.map(h =>
+        h ? h.toString().trim().toLowerCase() : ""
+      );
+      return;
+    }
+    const userId = uuidv4();
+    const obj = {};
+    headers.forEach((h, i) => {
+      if (h) obj[h] = row.values[i] || "";
+    });
 
-        batch.push([
-          obj.first_name || "",
-          obj.last_name || "",
-          obj.email || "",
-          obj.address_1 || "",
-          obj.address_2 || "",
+      // separate custom (non-fixed) fields into JSON
+  const customFields = {};
+  Object.keys(obj).forEach((key) => {
+    if (!FIXED_HEADERS.includes(key)) {
+      customFields[key] = obj[key];
+    }
+  });
+   
+    
+    batch.push([
+      userId,
+      obj.first_name || "",
+      obj.last_name || "",
+      obj.email || "",
+      obj.address_1 || "",
+      obj.address_2 || "",
+      fileId,
+      (obj.phone || "").toString(),
+      obj.city || "",
+      obj.state || "",
+      obj.country || "",
+      emailuserid,
+      JSON.stringify(customFields) 
+    ]);
 
-         
-          fileId,
-          (obj.phone || "").toString(),
-          obj.city || "",
-          obj.state || "",
-          obj.country || "",
+    totalRows++;
+    if (batch.length >= BATCH_SIZE) {
+      await insertBatch(batch); // make sure this is async
+      batch = [];
+    }
+  });
 
+  // flush last batch
+  if (batch.length > 0) {
+    await insertBatch(batch);
+  }
 
-
-        ]);
-
-        totalRows++;
-        if (batch.length >= BATCH_SIZE) {
-          insertBatch(batch);
-          batch = [];
-        }
-      });
+      //   totalRows++;
+      //   if (batch.length >= BATCH_SIZE) {
+      //     insertBatch(batch);
+      //     batch = [];
+      //   }
+      // });
     }
 
     // Insert remaining rows
     if (batch.length > 0) {
       await insertBatch(batch);
+      batch = [];
     }
 
+
     // Update profile count
-    await db
+    console.log("Total rows processed:", totalRows);
+    if(totalRows == 0){
+      await db
+      .promise()
+      .query("DELETE FROM lists_segments WHERE id=?", [
+        fileId,
+      ]);
+    }else{
+await db
       .promise()
       .query("UPDATE lists_segments SET profiles=? WHERE id=?", [
         totalRows,
         fileId,
       ]);
 
+    }
+    
     res.json({
       status: "success",
       fileId,
@@ -274,7 +410,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Upload failed:", err);
-    res.status(500).json({ error: ` Upload failed  ${err}`});
+    res.status(500).json({ error: "Upload failed" });
   } finally {
     fs.unlink(req.file.path, () => {}); // cleanup uploaded file
   }
@@ -431,6 +567,17 @@ app.get("/property", (req, res) => {
   });
 });
 
+
+app.post("/listname",authenticate, (req, res) => {
+  db.query(
+    "SELECT * FROM lists_segments where is_deleted=0 and user_id=? and name=?",
+    [req.user.id , req.body.name],
+    (err, results) => {
+      if (err) throw err;
+      res.json(results);
+    }
+  );
+});
 
 
 app.get("/property/users/:id/properties", (req, res) => {

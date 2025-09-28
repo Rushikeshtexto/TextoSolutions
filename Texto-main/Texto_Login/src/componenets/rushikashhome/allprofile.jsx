@@ -25,7 +25,7 @@ const Profile=()=>{
 
   const filteredUsers = users.filter(
     (u) =>
-      u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.phone?.toLowerCase().includes(searchTerm.toLowerCase())
   );

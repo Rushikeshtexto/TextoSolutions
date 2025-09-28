@@ -138,12 +138,13 @@ const List = () => {
               </thead>
               <tbody>
                 {currentFiles.map((f) => (
-                  <tr key={f.id}><td>
-                    <span  className={styles.color}>
+                  <tr key={f.id}>
+                    <td>
+                 
                       
                     <Link to={`/viewlist/${f.id}`} >
         {f.name}
-      </Link>  </span> </td>
+      </Link>  </td>
                     <td>{f.type}</td>
                     <td>{f.profiles}</td>
                     <td className={styles.td_left}>

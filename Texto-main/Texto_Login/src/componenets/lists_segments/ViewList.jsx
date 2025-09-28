@@ -30,26 +30,16 @@ const ViewList = () => {
     const [totalPages, setTotalPages] = useState(0); // ✅ make it state
     const [totalItems, setTotalItems] = useState(0); // ✅ make it state
 
-   const downloadExcel = async () => {
-  try {
-    setLoading(true);
-    const response = await axios.get(
-      `http://localhost:5000/export/users/${id}`,
-      { responseType: "blob" }
-    );
-
-    const blob = new Blob([response.data], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    FileSaver.saveAs(blob, "users.xlsx");
-  } catch (err) {
-    console.error("Export failed:", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
+    const downloadExcel = async () => {
+      setLoading(true)
+      const response = await axios.get(
+        `http://localhost:5000/export/users/${id}`,
+        { responseType: "blob" }
+      );
+      FileSaver.saveAs(response.data, "users.xlsx");
+      setLoading(false);
+    };
+    
 
     const handleBack = () => {
       navigate(-1); // 👈 Goes back to the last visited page
@@ -99,27 +89,25 @@ const ViewList = () => {
       setCurrentPage(1);
     };
     const limit = 100; // must match backend
-  
-   const fetchUsers = async () => {
-  try {
-    setLoading(true);
-    const res = await fetch(
-      `http://localhost:5000/profiles/${id}?page=${currentPage}&limit=${entriesPerPage}`
-    );
-    const data = await res.json();
-
-    // ✅ Works with both plain array and paginated response
-    setUsers(data.data || data || []);
-    setTotalPages(data.lastPage || 0);
-    setTotalItems(data.totalRows || (Array.isArray(data) ? data.length : 0));
-
-    setLoading(false);
-  } catch (err) {
-    console.error("Fetch error:", err);
-    setLoading(false);
-  }
-};
-
+  const token = localStorage.getItem("token");
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`http://localhost:5000/profiles/${id}?page=${currentPage}&limit=${entriesPerPage}`,{
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+       
+        setUsers(data.data || []);          // ✅ update users
+        setTotalPages(data.lastPage || 0);
+        setTotalItems(data.totalRows || 0)
+        console.log("Totalpages /",totalPages);
+        setLoading(false);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setLoading(false);
+      }
+    };
   
     useEffect(() => {
       fetchUsers();
@@ -136,7 +124,7 @@ const ViewList = () => {
     setError("");
 
     fetch(`http://localhost:5000/lists/${id}`,
-       { method:"POST"}
+       { method:"POST" ,headers:{Authorization: `Bearer ${localStorage.getItem("token")}`}}
     )
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch file");
@@ -154,9 +142,8 @@ const ViewList = () => {
   });
 //   console.log("Data  ",list[0]);
 
-  return (
-    <> 
-   <Header/>
+  return (<>
+  <Header/>
     <div className={styles.app_layout}>
     <div className={styles.sidebar}>
      < SideBar/>
@@ -237,7 +224,8 @@ const ViewList = () => {
                           <th>City</th>
                           <th>State</th>
                           <th>Country</th>
-                          
+                          <th>First Active</th>
+                          <th>Last Updated</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -257,6 +245,8 @@ const ViewList = () => {
                             <td>{u.city}</td>
                             <td>{u.state}</td>
                             <td>{u.country}</td>
+                            <td>{formatDate(u.first_active)}</td>
+                            <td>{formatDate(u.last_active)}</td>
                           </tr>
                         ))}
                       </tbody>

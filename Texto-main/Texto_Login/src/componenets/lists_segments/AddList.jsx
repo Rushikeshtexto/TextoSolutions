@@ -1,4 +1,289 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
+import { Upload, SaveAllIcon } from "lucide-react";
+import CloseIcon from "@mui/icons-material/Close";
+import Papa from "papaparse";
+import * as XLSX from "xlsx";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import styles from "../lists_segments/AddList.module.css";
+import SideBar from "../sidebar/SideBar";
+import Header from "../header/Header";
+import Footer from "../footer/Footer";
+import LoadingOverlay from "../loading/LoadingOverlay";
+import { useNavigate } from "react-router-dom";
+
+export const AddList = () => {
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [name, setName] = useState("");
+  const [items, setItems] = useState([]);
+  const [listnameExists, setListnameExists] = useState(false);
+
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  // Remove selected file
+  const handleRemoveFile = () => {
+    setFiles([]);
+    document.getElementById("file-upload").value = "";
+  };
+
+  // Check if list name exists
+  const searchName = async (listName) => {
+    if (!listName || !token) return;
+
+    try {
+      const res = await fetch("http://localhost:5000/listname", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: listName })
+      });
+
+      if (res.status === 401) {
+        toast.error("Unauthorized! Please login again.", { position: "top-center" });
+        return;
+      }
+
+      const data = await res.json();
+      setListnameExists(data && data.length > 0);
+    } catch (err) {
+      console.error("Error checking list name:", err);
+    }
+  };
+
+  useEffect(() => {
+    searchName(name);
+  }, [name]);
+
+  // Fetch headers/items
+  const fetchItems = async () => {
+    if (!token) return;
+    try {
+      const res = await fetch("http://localhost:5000/custom/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      setItems(data || []);
+    } catch (err) {
+      console.error("Fetch items error:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  // Prepare headers for Excel modification
+  const headersexcel = items.map((item) => item.name).reverse();
+
+  // Modify sample Excel headers
+  const modifyExcel = async () => {
+    const response = await fetch("/sampledata.xlsx");
+    const arrayBuffer = await response.arrayBuffer();
+    const workbook = XLSX.read(arrayBuffer, { type: "array" });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    sheetData[0] = headersexcel;
+    const newSheet = XLSX.utils.aoa_to_sheet(sheetData);
+    workbook.Sheets[sheetName] = newSheet;
+    const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Sampledata.xlsx";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // File selection handler
+  const handleFileChange = (e) => {
+    if (e.target.files.length > 0) setFiles(Array.from(e.target.files));
+  };
+
+  // Upload to API
+  const handleUploadToApi = async () => {
+    if (!files.length) return toast.error("Please select at least one file!");
+
+    setLoading(true);
+    for (const file of files) {
+      const ext = file.name.split(".").pop().toLowerCase();
+      if (!["csv", "xls", "xlsx"].includes(ext)) {
+        toast.error(`${file.name} is not a valid format`);
+        continue;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("name", name);
+
+      try {
+        const res = await fetch("http://localhost:5000/upload/", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData
+        });
+
+        if (res.ok) toast.success(`${file.name} uploaded successfully!`);
+        else toast.error(`Failed to upload ${file.name}`);
+      } catch (err) {
+        console.error("Upload error:", err);
+        toast.error(`Error uploading ${file.name}: ${err.message}`);
+      }
+    }
+    setLoading(false);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <Header />
+      <div className={styles.app_layout}>
+        <div className={styles.sidebar}>
+          <SideBar />
+        </div>
+        <div className={`${styles.content} relative p-6 border rounded-lg shadow-lg bg-white`}>
+          {loading && <LoadingOverlay />}
+          <h2>{name || "Add List"}</h2>
+          <button className={styles.backbtn} onClick={() => navigate("/list")}>
+            ← Back
+          </button>
+          <ToastContainer />
+          <hr style={{ border: "1px solid black", marginTop: 0 }} />
+
+          <div className={styles.uploadBox}>
+            <h3 className={styles.custom_heading}>
+              This excel file uploaded here would be part of all profiles and associated with this list
+            </h3>
+            <div className={styles.parent}>
+              <a onClick={modifyExcel} download className={styles.download}>
+                <Button variant="contained" color="success">
+                  Download Sample
+                </Button>
+              </a>
+            </div>
+
+            <label htmlFor="file-upload">
+              <input
+                id="file-upload"
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+                disabled={files.length > 0}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                component="span"
+                startIcon={<Upload />}
+                sx={{
+                  backgroundColor: "#c27edf",
+                  "&:hover": { backgroundColor: "#a85cc2" },
+                  padding: "10px 20px",
+                  borderRadius: "8px",
+                  margin: "0 40px"
+                }}
+                disabled={files.length > 0}
+              >
+                Select File
+              </Button>
+            </label>
+
+            {files.length > 0 && (
+              <div className={styles.my_text}>
+                <p>Selected files:</p>
+                <ul>
+                  {files.map((file, i) => (
+                    <li key={i}>
+                      <strong>{file.name}</strong> ({(file.size / 1024).toFixed(2)} KB)
+                    </li>
+                  ))}
+                </ul>
+                <span style={{ display: "inline-flex", alignItems: "center", marginLeft: 20 }}>
+                  <span>Remove the selected file</span>
+                  <IconButton size="small" color="error" onClick={handleRemoveFile} sx={{ ml: 1 }}>
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </span>
+              </div>
+            )}
+          </div>
+
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<SaveAllIcon />}
+            onClick={handleUploadToApi}
+            sx={{
+              backgroundColor: "#c27edf",
+              "&:hover": { backgroundColor: "#a85cc2" },
+              padding: "10px 20px",
+              borderRadius: "8px",
+              marginTop: 10,
+              marginLeft: "87%",
+              display: "flex",
+              justifyContent: "flex-end"
+            }}
+            disabled={!files.length}
+          >
+            Save
+          </Button>
+
+          <Dialog
+            open={open}
+            onClose={(e, reason) => reason !== "backdropClick" && handleClose()}
+            maxWidth="sm"
+            fullWidth
+            BackdropProps={{
+              style: { backgroundColor: "rgba(0,0,0,0.5)", backdropFilter: "blur(10px)" }
+            }}
+          >
+            <DialogTitle>List name</DialogTitle>
+            <DialogContent dividers>
+              <TextField
+                autoFocus
+                fullWidth
+                margin="dense"
+                label="Enter Your List Name"
+                variant="outlined"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              {listnameExists && <p style={{ color: "red" }}>List name already exists. Please choose another.</p>}
+            </DialogContent>
+            <DialogActions>
+              <Button variant="contained" onClick={handleClose} disabled={!name || listnameExists}>
+                Next
+              </Button>
+              <Button onClick={() => navigate("/list")} color="inherit">
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+
+/*import React, { useState } from "react";
 import { Button } from "@mui/material";
 import { Upload, Download ,Send,Save, SaveAllIcon } from "lucide-react";
 import axios from "axios";
@@ -154,7 +439,7 @@ console.log("Extra headers:", extra);
      
     
     <div className={`${styles.content}  relative p-6 border rounded-lg shadow-lg bg-white`}>
-      {/* Download Button in Top Right */}
+   
       {loading && <LoadingOverlay/>}
       {files ? <>{files.map((file, index) => (
         <h2 key={index}>
@@ -188,7 +473,7 @@ console.log("Extra headers:", extra);
 
     
 
-      {/* Upload Button */}
+   
       <label htmlFor="file-upload" >
         <input
           id="file-upload"
@@ -222,7 +507,7 @@ console.log("Extra headers:", extra);
           
       
 
-      {/* Show uploaded file name */}
+      
       {files ?files.length > 0 && (
   <div className={styles.my_text}>
     <p>Selected files:</p>
@@ -295,3 +580,4 @@ console.log("Extra headers:", extra);
     </>
   );
 };
+*/
