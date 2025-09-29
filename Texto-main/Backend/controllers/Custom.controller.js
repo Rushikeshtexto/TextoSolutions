@@ -12,8 +12,8 @@ export const additem = (req, res) => {
   const { name, type } = req.body;
 
   const sql = `
-    INSERT INTO custom_property (name, type, created_at, updated_at)
-    VALUES (?, ?, NOW(), NOW())
+    INSERT INTO custom_property (name, type, property_type, created_at, updated_at)
+    VALUES (?, ?, 'custom', NOW(), NOW())
   `;
 
   db.query(sql, [name, type], (err, result) => {

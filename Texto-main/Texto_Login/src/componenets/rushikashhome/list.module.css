@@ -162,13 +162,9 @@ html, body {
 
 .paginationcontainer {
   display: flex;
-  justify-content: space-between; /* align items from left */
+  justify-content: space-between; /* left & right items */
   align-items: center;
- margin-bottom: 100px;
-  gap: 20px;        /* space between left & right sections */
-  padding-left: 20px; /* ✅ small indent from left */
-  padding-right: 20px; /* ✅ breathing room on right */
-  height:40px;
+  margin-top: 10px;
 }
 
 

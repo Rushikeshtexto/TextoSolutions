@@ -1,7 +1,7 @@
 import React,{useState,useEffect,useRef} from 'react'
 import { Link } from 'react-router-dom'
 import styles from './Header.module.css'
-import MediaImg from "../../assets/Media.jpg"; // <- fixed path
+import MediaImg from "../../assets/newtexto.jpg"; // <- fixed path
 
 
 const Header = () => {

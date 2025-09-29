@@ -94,8 +94,8 @@ const List = () => {
 
         <div className={styles.content}>
           <div className={styles.segments_section}>
-            <h2>List & Segments</h2>
-
+            <h2>LIST & SEGMENTS</h2>
+  <hr />
          <div className={styles.segments_header}>
            
             <div className={styles.segments_buttons}>
@@ -142,7 +142,7 @@ const List = () => {
                     <td>
                  
                       
-                    <Link to={`/viewlist/${f.id}`} >
+                    <Link to={`/viewlist/${f.id}`} style={{ textDecoration: "none", color: "blue" }} >
         {f.name}
       </Link>  </td>
                     <td>{f.type}</td>

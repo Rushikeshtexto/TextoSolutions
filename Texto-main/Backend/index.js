@@ -123,312 +123,199 @@ app.get("/logout", (req, res) => {
 
 const upload = multer({ dest: "uploads/" });
 
-
 app.post("/upload", authenticate, upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-    const name = req.body.name
+
+    const name = req.body.name;
     const fileName = req.file.originalname;
     const fileExt = fileName.split(".").pop().toLowerCase();
-    const emailuserid = req.user.id; 
+    const emailuserid = req.user.id;
     const allowedExt = ["xls", "xlsx", "csv"];
+
     if (!allowedExt.includes(fileExt)) {
-      return res
-        .status(400)
-        .json({ error: "Only .xls, .xlsx and .csv files are allowed" });
+      return res.status(400).json({ error: "Only .xls, .xlsx and .csv files are allowed" });
     }
 
-    // Insert into lists_segments first
+    // ✅ Check if segment name already exists
+    let [existing] = await db.promise().query(
+      "SELECT id FROM lists_segments WHERE name = ?",
+      [name]
+    );
+
     let fileId;
-    let result ="";
-    try {
-      const [segmentResult] = await db
-        .promise()
-        .query(
-          "INSERT INTO lists_segments (name,file_name, type, profiles) VALUES (?,?, ?, ?)",
-          [name ,fileName, "list", 0] // will update profiles count later
-        );
-        
-        const [rows] = await db.promise().query(
-  "SELECT id FROM lists_segments WHERE file_name=? ORDER BY created_at DESC LIMIT 1",
-  [fileName]
-);
-     fileId = rows[0].id;
-      console.log("✅ Inserted fileId:", fileId);
-    } catch (err) {
-      console.error("❌ lists_segments insert error:", err);
-      return res.status(500).json({ error: "lists_segments insert failed" });
+    if (existing.length > 0) {
+      fileId = existing[0].id; // reuse existing segment
+      console.log("⚠️ Segment exists, using existing fileId:", fileId);
+    } else {
+      const [segmentResult] = await db.promise().query(
+        "INSERT INTO lists_segments (name, file_name, type, profiles) VALUES (?, ?, ?, ?)",
+        [name, fileName, "list", 0]
+      );
+      fileId = segmentResult.insertId;
+      console.log("✅ Inserted new fileId:", fileId);
     }
-   
-    let totalRows = 0;
+
+    // ✅ Batch insert setup
     const BATCH_SIZE = 5000;
     let batch = [];
-    let updatedrows = 0;
-    // Helper to insert batch
+    let totalRows = 0;
+
     async function insertBatch(batch) {
       if (batch.length === 0) return;
-
       try {
         const [result] = await db.promise().query(
           `INSERT INTO excelusers 
-              (id ,first_name,last_name, email, address_1,address_2, file_id, phone, city, state,country,user_id,property) 
+            (id, first_name, last_name, email, address_1, address_2, file_id, phone, city, state, country, user_id, property)
            VALUES ? 
-           ON DUPLICATE KEY UPDATE 
-              first_name=VALUES(first_name),
-              last_name = VALUES(last_name),
-              address_1=VALUES(address_1),
-              address_2=VALUES(address_2),             
-              file_id=VALUES(file_id),
-              city=VALUES(city),
-              state=VALUES(state),
-              country=VALUES(country),
-              user_id=VALUES(user_id),
-               property=VALUES(property)`,
+           ON DUPLICATE KEY UPDATE
+             first_name=VALUES(first_name),
+             last_name=VALUES(last_name),
+             address_1=VALUES(address_1),
+             address_2=VALUES(address_2),
+             file_id=VALUES(file_id),
+             city=VALUES(city),
+             state=VALUES(state),
+             country=VALUES(country),
+             user_id=VALUES(user_id),
+             property=VALUES(property)`,
           [batch]
         );
-        updatedrows += result.changedRows;
-        console.log(`Inserted: ${result.affectedRows - result.changedRows} rows`);
-        console.log(`Updated: ${result.changedRows} rows`);
+        console.log(`Inserted: ${result.affectedRows - result.changedRows} rows, Updated: ${result.changedRows} rows`);
       } catch (err) {
         console.error("❌ excelusers insert/update error:", err);
-
       }
     }
 
-    // async function insertCustomBatch(customBatch) {
-    //   if (customBatch.length === 0) return;
+    const FIXED_HEADERS = [
+      "first_name","last_name","address_1","address_2",
+      "phone","email","city","state","country"
+    ];
 
-    //   try {
-    //     const [result] = await db.promise().query(
-    //       `INSERT INTO property
-    //           (row_id,file_id, property_name, property_value) 
-    //        VALUES ?`,
-    //       [customBatch]
-    //     );
-    //     console.log(`✅ Inserted ${result.affectedRows} custom property rows`);
-    //   } catch (err) {
-    //     console.error("❌ user_custom_property insert error:", err);
-    //   }
-    // }
+    const invalidRows = [];
+// ✅ Add this at the top of your file
+const isValidPhone = (phone) => {
+  // simple regex for 10-digit numbers, adjust if needed
+  return /^\d{10}$/.test(phone);
+};
 
-    let customBatch = [];
-
-
-    // Process file based on extension
-    // Normalize headers to lowercase and trim spaces
-    // For CSV, also remove BOM and surrounding quotes  
-
-
-const FIXED_HEADERS = [
-  "first_name","last_name","address_1","address_2",
-  "phone","email","city","state","country"
-];
-
-
-const invalidRows = [];
-    if (fileExt === "csv") {   
-      // Handle CSV with stream
+    // ✅ Process CSV
+    if (fileExt === "csv") {
       const stream = fs.createReadStream(req.file.path).pipe(csvParser({
-        mapHeaders: ({ header }) => {
-          if (!header) return null;
-          return header
-            .replace(/^\uFEFF/, "")   // remove BOM if present
-            .replace(/^"|"$/g, "")    // 🔥 remove surrounding quotes
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, "_");    // spaces → underscores
-        }
+        mapHeaders: ({ header }) => header ? header.replace(/^\uFEFF/, "").replace(/^"|"$/g, "").trim().toLowerCase().replace(/\s+/g, "_") : null
       }));
-      
-// Object.keys(obj).forEach(key => {
-//   if (!FIXED_HEADERS.includes(key)) {
-//     customData[key] = obj[key];
-//   }
-// });
-      stream.on("headers", (headers) => {
-        console.log("Headers detected:", headers.map(h => JSON.stringify(h)));
-      });
+
       for await (const row of stream) {
-        const rawPhone = (row.Phone || row.phone || row.PHONE || "").toString().trim();
-
-const phone = isValidPhone(rawPhone) ? rawPhone : null;
-if (!isValidPhone(rawPhone)) {
-  invalidRows.push({
-    rowNumber: idx + 1, 
-    phone: rawPhone
-  });
-}
         const userId = uuidv4();
-        // console.log("first name ",row.first_name);
-        // Build fixed data row
-  const fixedRow = [
-    userId,
-    row.First_Name || row.first_name || row.FIRST_NAME || "",
-    row.Last_Name || row.last_name || row.LAST_NAME || "",
-    row.Email || row.email || row.EMAIL || "",
-    row.Address_1 || row.address_1 || row.ADDRESS_1 || "",
-    row.Address_2 || row.address_2 || row.ADDRESS_2 || "",
-    fileId,
-    phone,
-    row.City || row.city || row.CITY || "",
-    row.State || row.state || row.STATE || "",
-    row.Country || row.country || row.COUNTRY || "",
-    emailuserid
-  ];
+        const rawPhone = (row.phone || row.Phone || "").toString().trim();
+        const phone = isValidPhone(rawPhone) ? rawPhone : null;
 
-  batch.push(fixedRow);
-  const customData = {};
-  Object.keys(row).forEach((key) => {
-    const normalized = key.toLowerCase().trim();
-    if (!FIXED_HEADERS.includes(normalized)) {
-      customData[normalized] = row[key] || "";
-    }
-  });
+        if (!phone) invalidRows.push({ phone: rawPhone });
 
-  // 🔹 Add JSON string to batch
-  fixedRow.push(JSON.stringify(customData));
+        const fixedRow = [
+          userId,
+          row.first_name || row.First_Name || "",
+          row.last_name || row.Last_Name || "",
+          row.email || row.Email || "",
+          row.address_1 || row.Address_1 || "",
+          row.address_2 || row.Address_2 || "",
+          fileId,
+          phone,
+          row.city || row.City || "",
+          row.state || row.State || "",
+          row.country || row.Country || "",
+          emailuserid,
+          JSON.stringify(Object.fromEntries(Object.entries(row).filter(([k]) => !FIXED_HEADERS.includes(k.toLowerCase()))))
+        ];
 
-  // Now handle custom fields (anything not in FIXED_HEADERS)
-  // Object.keys(row).forEach((key) => {
-  //   const normalized = key.toLowerCase().trim();
-  //   if (!FIXED_HEADERS.includes(normalized)) {
-  //     customBatch.push([
-  //       userId,              // placeholder for user_id (we’ll map later after insert)
-  //       fileId,            // file_id
-  //       normalized,        // property_name
-  //       row[key] || ""     // property_value
-  //     ]);
-  //   }
-  // });
-        // console.log("batch ",batch);
-
+        batch.push(fixedRow);
         totalRows++;
+
         if (batch.length >= BATCH_SIZE) {
           await insertBatch(batch);
-          // await insertCustomBatch(customBatch);
-          // customBatch = [];
           batch = [];
         }
       }
     } else {
-      // Handle Excel with ExcelJS streaming
-  const workbook = new ExcelJS.Workbook();
-  const stream = fs.createReadStream(req.file.path);
+      // ✅ Process Excel
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(req.file.path);
+      const worksheet = workbook.worksheets[0];
+      let headers = [];
 
-  await workbook.xlsx.read(stream);
+      worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+        if (rowNumber === 1) {
+          headers = row.values.map(h => h ? h.toString().trim().toLowerCase() : "");
+          return;
+        }
+        const obj = {};
+        headers.forEach((h, i) => { if(h) obj[h] = row.values[i] || ""; });
 
-  const worksheet = workbook.worksheets[0];
+        const userId = uuidv4();
+        const fixedRow = [
+          userId,
+          obj.first_name || "",
+          obj.last_name || "",
+          obj.email || "",
+          obj.address_1 || "",
+          obj.address_2 || "",
+          fileId,
+          (obj.phone || "").toString(),
+          obj.city || "",
+          obj.state || "",
+          obj.country || "",
+          emailuserid,
+          JSON.stringify(Object.fromEntries(Object.entries(obj).filter(([k]) => !FIXED_HEADERS.includes(k))))
+        ];
 
-  let headers = [];
-  worksheet.eachRow({ includeEmpty: false }, async (row, rowNumber) => {
-    if (rowNumber === 1) {
-      headers = row.values.map(h =>
-        h ? h.toString().trim().toLowerCase() : ""
-      );
-      return;
-    }
-    const userId = uuidv4();
-    const obj = {};
-    headers.forEach((h, i) => {
-      if (h) obj[h] = row.values[i] || "";
-    });
+        batch.push(fixedRow);
+        totalRows++;
 
-      // separate custom (non-fixed) fields into JSON
-  const customFields = {};
-  Object.keys(obj).forEach((key) => {
-    if (!FIXED_HEADERS.includes(key)) {
-      customFields[key] = obj[key];
-    }
-  });
-   
-    
-    batch.push([
-      userId,
-      obj.first_name || "",
-      obj.last_name || "",
-      obj.email || "",
-      obj.address_1 || "",
-      obj.address_2 || "",
-      fileId,
-      (obj.phone || "").toString(),
-      obj.city || "",
-      obj.state || "",
-      obj.country || "",
-      emailuserid,
-      JSON.stringify(customFields) 
-    ]);
-
-    totalRows++;
-    if (batch.length >= BATCH_SIZE) {
-      await insertBatch(batch); // make sure this is async
-      batch = [];
-    }
-  });
-
-  // flush last batch
-  if (batch.length > 0) {
-    await insertBatch(batch);
-  }
-
-      //   totalRows++;
-      //   if (batch.length >= BATCH_SIZE) {
-      //     insertBatch(batch);
-      //     batch = [];
-      //   }
-      // });
+        if (batch.length >= BATCH_SIZE) insertBatch(batch);
+      });
     }
 
-    // Insert remaining rows
-    if (batch.length > 0) {
-      await insertBatch(batch);
-      batch = [];
+    if (batch.length > 0) await insertBatch(batch);
+
+    // ✅ Update profile count
+    if (totalRows === 0) {
+      await db.promise().query("DELETE FROM lists_segments WHERE id=?", [fileId]);
+    } else {
+      await db.promise().query("UPDATE lists_segments SET profiles=? WHERE id=?", [totalRows, fileId]);
     }
 
+    res.json({ status: "success", fileId, insertedOrUpdated: totalRows });
 
-    // Update profile count
-    console.log("Total rows processed:", totalRows);
-    if(totalRows == 0){
-      await db
-      .promise()
-      .query("DELETE FROM lists_segments WHERE id=?", [
-        fileId,
-      ]);
-    }else{
-await db
-      .promise()
-      .query("UPDATE lists_segments SET profiles=? WHERE id=?", [
-        totalRows,
-        fileId,
-      ]);
-
-    }
-    
-    res.json({
-      status: "success",
-      fileId,
-      insertedOrUpdated: totalRows,
-    });
   } catch (err) {
     console.error("❌ Upload failed:", err);
     res.status(500).json({ error: "Upload failed" });
   } finally {
-    fs.unlink(req.file.path, () => {}); // cleanup uploaded file
+    fs.unlink(req.file.path, () => {}); // cleanup
   }
 });
+
 
 
 
 // Fetch data from SQL
 app.get("/data", (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 100;
+  const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
 
-  db.query("SELECT * FROM excelusers LIMIT ? OFFSET ?", [limit, offset], (err, results) => {
-    if (err) throw err;
-    res.json(results);
+  db.query("SELECT COUNT(*) AS count FROM excelusers", (err, countResult) => {
+    if (err) return res.status(500).json({ error: err });
+
+    const totalRows = countResult[0].count;
+    const lastPage = Math.ceil(totalRows / limit);
+
+    db.query("SELECT * FROM excelusers LIMIT ? OFFSET ?", [limit, offset], (err, results) => {
+      if (err) return res.status(500).json({ error: err });
+      res.json({ data: results, totalRows, lastPage });
+    });
   });
 });
+
 
 
 app.get("/files", (req, res) => {

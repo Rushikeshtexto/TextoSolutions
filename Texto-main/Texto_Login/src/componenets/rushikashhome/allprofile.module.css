@@ -34,6 +34,17 @@ html, body {
 .content h2{
 
   margin-top: 10px;
+  margin-left: 10px;
+}
+
+.hr{
+
+ 
+ 
+  
+  margin-left: 15px;  /* space from left */
+  margin-right: 15px; /* space from right */
+
 }
 /* ===== Profiles Section ===== */
 .profiles_section {
@@ -132,20 +143,7 @@ html, body {
   margin-top: 10px;
 }
 
-.pagination {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
 
-.pagination button {
-  padding: 6px 12px;
-  border: none;
-  background: #c27edf;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-}
 
 /* ===== Header & Footer ===== */
 .app_container > header,
