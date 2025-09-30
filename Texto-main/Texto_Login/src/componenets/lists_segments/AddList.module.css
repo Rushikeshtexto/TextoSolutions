@@ -46,10 +46,8 @@ html, body {
     display: flex;
     gap: 10px; /* space between buttons */
     flex-wrap: wrap; /* wrap buttons on smaller screens */
-   
     justify-content: flex-end;
     width: auto;         /* 👈 container only wraps content */
-  pointer-events: none;
   padding: 0 20px;
 
 }

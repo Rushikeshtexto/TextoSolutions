@@ -13,6 +13,7 @@ import Pagination from "../rushikashhome/pagination";
 import Dropdown from "../rushikashhome/dropdown";
 import DisplayRange from "./displayrange";
 
+
 const List = () => {
   const [file, setFile] = useState(null);
   const [filesData, setFilesData] = useState([]);

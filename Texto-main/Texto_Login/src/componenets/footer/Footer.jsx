@@ -3,7 +3,7 @@ import styles from  './Footer.module.css';
 import facebook from "../../assets/facebooklogo.png";
 import instagram from "../../assets/instagramlogo.jpg";
 import twitter from "../../assets/twitter.jpg";
-import texto from "../../assets/newtexto.jpg";
+import texto from "../../assets/Media.jpg";
 import youtube from "../../assets/youtubelogo.png";
 import linkdin from "../../assets/linkedinlogo.jpg";
 

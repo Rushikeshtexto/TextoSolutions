@@ -1,0 +1,80 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* remove body scroll */
+  overflow: hidden;
+}
+
+.app_layout {
+  display: flex;
+  flex-direction: row;
+  margin-top: 60px;               /* header height */
+  height: calc(100vh - 120px);    /* viewport minus header & footer */
+}
+
+.sidebar {
+  position: fixed;
+  top: 60px;                      /* below header */
+  left: 0;
+  height: calc(100vh - 120px);    /* full height minus header & footer */
+  width: 220px;
+  overflow-y: auto;               /* sidebar scroll if content overflows */
+}
+
+.content {
+  flex: 1;
+  margin-left: 220px;             /* push right of sidebar */
+  padding: 0px;
+  overflow-y: auto;               /* scroll inside content */
+  height: calc(100vh - 120px);    /* viewport minus header & footer */
+}
+
+.mainbox {
+  display: flex;
+  flex-direction: column;   /* stack boxes vertically */
+  gap: 10px;                /* space between boxes */
+  margin-right: 200px;  
+  margin-left: 60px;     /* auto left & right centers it */
+ 
+  width: fit-content;       /* shrink to fit box width */
+  align-items: center;  
+  max-height:fit-content  ;
+  max-width: fit-content;  /* make child boxes centered horizontally */
+}
+
+
+.box1{
+    width :1000px;
+  height:90px;
+    border:1px solid black;
+    border-radius: 10px;
+   margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    background-color: rgb(235, 228, 228);
+}
+.box2{
+
+ width :1000px;
+  height:60px;
+    border:1px solid black;
+    border-radius: 10px;
+   margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+
+}
+.box3 
+{
+     width :1000px;
+  height:80px;
+    border:1px solid black;
+    border-radius: 10px;
+   margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+ 

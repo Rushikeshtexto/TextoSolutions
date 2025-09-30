@@ -1,0 +1,14 @@
+.tableCell {
+  max-width: 150px; /* set a width as needed */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer; /* so user knows it's clickable */
+}
+ 
+.expandedCell {
+  white-space: normal; /* allow wrapping */
+  overflow: visible;
+  text-overflow: clip;
+}
+ 

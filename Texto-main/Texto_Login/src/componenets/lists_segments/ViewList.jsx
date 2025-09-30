@@ -12,6 +12,7 @@ import FileSaver from "file-saver";
 import DisplayRange from '../rushikashhome/displayrange';
 import { Button } from '@mui/material';
 import { Download } from 'lucide-react';
+import ExpandableCell from '../rushikashhome/ExpandableCell';
 const ViewList = () => {
     const navigate = useNavigate();
     const [error, setError] = useState("");
@@ -55,10 +56,14 @@ const ViewList = () => {
     console.log("User ",users)
     const currentEntries = filteredUsers
   
-    const formatDate = (dateString) => {
-      if (!dateString) return "";
-      return new Date(dateString).toISOString().split("T")[0];
-    };
+  const formatDate = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+};
   
     const safeValue = (val) => {
       if (!val) return "";
@@ -237,16 +242,20 @@ const ViewList = () => {
                             <td>  
                             {u.first_name}
                           </td>
-                          <td>{u.last_name}</td>
-                            <td>{maskEmail(safeValue(u.email))}</td>
-                            <td>{maskPhone(u.phone)}</td>
-                            <td>{u.address_1}</td>
-                            <td>{u.address_2}</td>
-                            <td>{u.city}</td>
-                            <td>{u.state}</td>
-                            <td>{u.country}</td>
-                            <td>{formatDate(u.first_active)}</td>
-                            <td>{formatDate(u.last_active)}</td>
+                        {[
+                                u.last_name,
+                                maskEmail(safeValue(u.email)),
+                                maskPhone(u.phone),
+                                u.address_1,
+                                u.address_2,
+                                u.city,
+                                u.state,
+                                u.country,
+                               formatDate(u.created_at) ,
+                                formatDate(u.updated_at),
+                              ].map((val, idx) => (
+                                <ExpandableCell key={idx} value={val} />
+                              ))}
                           </tr>
                         ))}
                       </tbody>

@@ -8,6 +8,7 @@ import SideBar from "../sidebar/SideBar";
 import Header from "../header/Header";
 import Footer from "../footer/Footer";
 import UserDetails from "./UserDetails";
+import ExpandableCell from "./ExpandableCell"
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -129,16 +130,21 @@ const Profile = () => {
                                   {u.first_name}
                                 </span>
                               </td>
-                              <td>{u.last_name}</td>
-                              <td>{maskEmail(safeValue(u.email))}</td>
-                              <td>{maskPhone(u.phone)}</td>
-                              <td>{u.address_1}</td>
-                              <td>{u.address_2}</td>
-                              <td>{u.city}</td>
-                              <td>{u.state}</td>
-                              <td>{u.country}</td>
-                              <td>{formatDate(u.created_at)}</td>
-                           <td>{formatDate(u.updated_at)}</td>
+
+                              {[
+        u.last_name,
+        maskEmail(safeValue(u.email)),
+        maskPhone(u.phone),
+        u.address_1,
+        u.address_2,
+        u.city,
+        u.state,
+        u.country,
+       formatDate(u.created_at) ,
+        formatDate(u.updated_at),
+      ].map((val, idx) => (
+        <ExpandableCell key={idx} value={val} />
+      ))}
                             </tr>
                           ))}
                         </tbody>

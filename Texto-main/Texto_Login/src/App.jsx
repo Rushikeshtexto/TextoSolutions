@@ -11,7 +11,7 @@ import Home from "./componenets/rushikashhome/Home.jsx";
 import UserDetails from "./componenets/rushikashhome/UserDetails.jsx";
 import ViewList from "./componenets/lists_segments/ViewList.jsx";
 import Customproperty from "./componenets/custome_property/customproperty.jsx";
-
+import Segment from "./componenets/lists_segments/viewSegment.jsx";
 
 function App() {
   return (
@@ -33,6 +33,7 @@ function App() {
         <Route path="/viewlist/:id" element={<ViewList/>}/>
         <Route path="/addsegment" element={<Segments/>}/>
         <Route path="/customproperty" element={<Customproperty/>}></Route>
+        <Route path="/viewsegment" element={<Segment/>}></Route>
       </Routes>
     </Router>
   );
